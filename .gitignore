@@ -1,45 +1,94 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Flutter/Dart/Pub
 .dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
+.packages
 .pub/
-/build/
-/coverage/
+build/
+flutter_*.png
+coverage/
+*.dart.js
+*.info.json
+*.map
+*.module
+*.snapshot
+*.dill
+*.tmp
+*.log
 
-# Symbolication related
-app.*.symbols
+# IntelliJ / VSCode
+.idea/
+*.iml
+.vscode/
+*.swp
 
-# Obfuscation related
-app.*.map.json
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Android
+**/android/**/local.properties
+**/android/**/.gradle/
+**/android/**/app/build/
+**/android/**/captures/
+**/android/**/gradlew
+**/android/**/gradlew.bat
+**/android/**/gradle-wrapper.jar
+**/android/**/gradle-wrapper.properties
+**/android/**/gradle/
+**/android/**/keystore.properties
+
+# iOS
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Pods/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/.symlinks/
+**/ios/build/
+**/ios/*.xcworkspace/
+**/ios/*.xcuserdata/
+**/ios/Runner.xcworkspace/
+**/ios/Runner.xcodeproj/project.xcworkspace/
+
+# Xcode
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.xcuserstate
+
+# Firebase
+# firebase_options.dart 와 google-services.json 은 git에 포함해도 보안 이슈 없음
+# 하지만 google-services.json, GoogleService-Info.plist 은 보통 ignore 추천
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Logs
+logs/
+*.log
+
+# Generated files
+lib/generated_plugin_registrant.dart
+flutter_export_environment.sh
+
+# Others
+*.lock
+pubspec.lock
+
+# Environment files
+.env
+.env.*
