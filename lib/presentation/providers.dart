@@ -1,5 +1,7 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cute_story_closed_sns_app/data/data_source/like_data_source.dart';
+import 'package:cute_story_closed_sns_app/data/data_source/like_data_source_impl.dart';
+import 'package:cute_story_closed_sns_app/domain/usercase/toggle_like_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/post_data_source.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/post_data_source_impl.dart';
@@ -25,51 +27,30 @@ final deleteCommentUsecaseProvider = Provider<DeleteCommentUsecase>((ref) {
   return DeleteCommentUsecase(repo);
 });
 
-/// ------------------------------
-/// Post DataSource Provider
-/// ------------------------------
 final postDataSourceProvider = Provider<PostDataSource>((ref) {
   return PostDataSourceImpl(FirebaseFirestore.instance);
 });
 
-/// ------------------------------
-/// Post Repository Provider
-/// ------------------------------
 final postRepositoryProvider = Provider<PostRepository>((ref) {
   return PostRepositoryImpl(ref.read(postDataSourceProvider));
 });
 
-/// ------------------------------
-/// FetchPosts UseCase Provider
-/// ------------------------------
 final fetchPostsUsecaseProvider = Provider<FetchPostsUsecase>((ref) {
   return FetchPostsUsecase(ref.read(postRepositoryProvider));
 });
 
-/// ------------------------------
-/// Like DataSource Provider
-/// ------------------------------
 final likeDataSourceProvider = Provider<LikeDataSource>((ref) {
   return LikeDataSourceImpl();
 });
 
-/// ------------------------------
-/// Like Repository Provider
-/// ------------------------------
 final likeRepositoryProvider = Provider<LikeRepository>((ref) {
   return LikeRepositoryImpl(ref.read(likeDataSourceProvider));
 });
 
-/// ------------------------------
-/// ToggleLike UseCase Provider
-/// ------------------------------
 final toggleLikeUsecaseProvider = Provider<ToggleLikeUsecase>((ref) {
   return ToggleLikeUsecase(ref.read(likeRepositoryProvider));
 });
 
-/// ------------------------------
-/// Comment Providers
-/// ------------------------------
 final commentDataSourceProvider = Provider<CommentDataSource>((ref) {
   return CommentDataSourceImpl(FirebaseFirestore.instance);
 });
