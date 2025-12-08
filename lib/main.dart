@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       ),
 
       // 첫 화면은 PostListPage로 설정
-      home: const PostListPage(),
+      home: PostListPage(),
     );
   }
 }
