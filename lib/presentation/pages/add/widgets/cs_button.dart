@@ -1,0 +1,37 @@
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:flutter/material.dart';
+
+class CsButton extends StatelessWidget {
+  final BuildContext context;
+  final String text;
+
+  const CsButton({
+    super.key,
+    required this.context,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 60,
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: vrc(context).brand,
+          foregroundColor: vrc(context).background200,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
