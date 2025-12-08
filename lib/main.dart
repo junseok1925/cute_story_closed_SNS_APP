@@ -1,4 +1,5 @@
 import 'package:cute_story_closed_sns_app/firebase_options.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,11 @@ class MyApp extends StatelessWidget {
       ),
 
       // 첫 화면은 PostListPage로 설정
-      home: const PostListPage(),
+
+      home:  MyPage(),
+      
+      //const PostListPage(),
+           
     );
   }
 }
