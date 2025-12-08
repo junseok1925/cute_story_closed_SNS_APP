@@ -20,4 +20,18 @@ class Post {
     required this.likeCount,
     required this.commentCount,
   });
+
+  Post copyWith({int? likeCount, int? commentCount}) {
+    return Post(
+      postId: postId,
+      authorId: authorId,
+      nickname: nickname,
+      mediaUrl: mediaUrl,
+      mediaType: mediaType,
+      content: content,
+      likeCount: likeCount ?? this.likeCount,
+      commentCount: commentCount ?? this.commentCount,
+      createdAt: createdAt,
+    );
+  }
 }
