@@ -62,7 +62,7 @@ class PostListPage extends ConsumerWidget {
                 constraints: BoxConstraints(minHeight: screenHeight * 0.2),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black54],
+                    colors: [Colors.transparent, Colors.black87],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
