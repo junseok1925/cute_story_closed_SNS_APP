@@ -1,4 +1,6 @@
-# Flutter/Dart/Pub
+##############################
+# Flutter / Dart / Pub
+##############################
 .dart_tool/
 .packages
 .pub/
@@ -14,37 +16,49 @@ coverage/
 *.tmp
 *.log
 
+# Generated plugin files (must NOT commit)
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Generated registrant
+lib/generated_plugin_registrant.dart
+
+# pubspec.lock (Flutter app에서는 보통 ignore)
+pubspec.lock
+
+
+##############################
 # IntelliJ / VSCode
+##############################
 .idea/
 *.iml
 .vscode/
 *.swp
 
-# MacOS
+
+##############################
+# macOS
+##############################
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Thumbnails
 ._*
-
-# Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
-
-# Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
 Network Trash Folder
 Temporary Items
 .apdisk
 
+
+##############################
 # Android
+##############################
 **/android/**/local.properties
 **/android/**/.gradle/
-**/android/**/app/build/
 **/android/**/captures/
 **/android/**/gradlew
 **/android/**/gradlew.bat
@@ -52,43 +66,46 @@ Temporary Items
 **/android/**/gradle-wrapper.properties
 **/android/**/gradle/
 **/android/**/keystore.properties
+**/android/**/app/build/
 
+
+##############################
 # iOS
+##############################
 **/ios/Flutter/.last_build_id
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/Pods/
-**/ios/Runner/GeneratedPluginRegistrant.*
 **/ios/.symlinks/
 **/ios/build/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Runner.xcworkspace/
 **/ios/*.xcworkspace/
 **/ios/*.xcuserdata/
-**/ios/Runner.xcworkspace/
-**/ios/Runner.xcodeproj/project.xcworkspace/
 
+
+##############################
 # Xcode
+##############################
 *.xccheckout
 *.moved-aside
 DerivedData/
 *.xcuserstate
 
+
+##############################
 # Firebase
-# firebase_options.dart 와 google-services.json 은 git에 포함해도 보안 이슈 없음
-# 하지만 google-services.json, GoogleService-Info.plist 은 보통 ignore 추천
+##############################
+# flutterfire CLI가 생성한 firebase_options.dart 는 포함해도 OK
+# google-services.json / GoogleService-Info.plist 은 보통 보안 때문에 ignore
 **/google-services.json
 **/GoogleService-Info.plist
 
+
+##############################
 # Logs
+##############################
 logs/
 *.log
 
-# Generated files
-lib/generated_plugin_registrant.dart
-flutter_export_environment.sh
 
-# Others
-*.lock
-pubspec.lock
-
-# Environment files
-.env
-.env.*
+###################
