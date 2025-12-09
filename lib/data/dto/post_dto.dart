@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostDto {
+  
   final String postId;
   final String mediaUrl;
   final String mediaType;
