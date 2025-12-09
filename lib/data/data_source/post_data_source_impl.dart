@@ -9,6 +9,7 @@ class PostDataSourceImpl implements PostDataSource {
 
   CollectionReference get _postsCol =>
       _firestore.collection('posts');
+  CollectionReference get _likesCol => _firestore.collection('likes');
 
   @override
   Future<List<PostDto>> fetchPosts({
@@ -25,7 +26,11 @@ class PostDataSourceImpl implements PostDataSource {
     final snapshot = await query.get();
 
     return snapshot.docs
-        .map((doc) => PostDto.fromJson(doc.data() as Map<String, dynamic>))
+        .map(
+          (doc) => PostDto.fromDoc(
+            doc as DocumentSnapshot<Map<String, dynamic>>,
+          ),
+        )
         .toList();
   }
 
@@ -35,7 +40,7 @@ class PostDataSourceImpl implements PostDataSource {
 
     if (!doc.exists) return null;
 
-    return PostDto.fromJson(doc.data() as Map<String, dynamic>);
+    return PostDto.fromDoc(doc as DocumentSnapshot<Map<String, dynamic>>);
   }
 
   @override
@@ -51,5 +56,62 @@ class PostDataSourceImpl implements PostDataSource {
   @override
   Future<void> deletePost(String postId) async {
     await _postsCol.doc(postId).delete();
+  }
+
+  @override
+  Future<void> addLike({
+    required String postId,
+    required String userId,
+    required String nickname,
+    required DateTime createdAt,
+  }) async {
+    final likeDoc = _likesCol.doc('${postId}_$userId');
+
+    await _firestore.runTransaction((txn) async {
+      final likeSnap = await txn.get(likeDoc);
+      if (likeSnap.exists) {
+        return;
+      }
+
+      txn.set(likeDoc, {
+        'postId': postId,
+        'userId': userId,
+        'nickname': nickname,
+        'createdAt': Timestamp.fromDate(createdAt),
+      });
+
+      txn.update(_postsCol.doc(postId), {
+        'likeCount': FieldValue.increment(1),
+      });
+    });
+  }
+
+  @override
+  Future<bool> isLiked({
+    required String postId,
+    required String userId,
+  }) async {
+    final likeDoc = await _likesCol.doc('${postId}_$userId').get();
+    return likeDoc.exists;
+  }
+
+  @override
+  Future<void> removeLike({
+    required String postId,
+    required String userId,
+  }) async {
+    final likeDoc = _likesCol.doc('${postId}_$userId');
+
+    await _firestore.runTransaction((txn) async {
+      final likeSnap = await txn.get(likeDoc);
+      if (!likeSnap.exists) {
+        return;
+      }
+
+      txn.delete(likeDoc);
+      txn.update(_postsCol.doc(postId), {
+        'likeCount': FieldValue.increment(-1),
+      });
+    });
   }
 }

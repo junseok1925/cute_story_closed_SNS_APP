@@ -18,4 +18,24 @@ abstract interface class PostRepository {
 
   /// 게시물 삭제
   Future<void> deletePost(String postId);
+
+  /// 좋아요 여부 조회
+  Future<bool> isLiked({
+    required String postId,
+    required String userId,
+  });
+
+  /// 좋아요 추가
+  Future<void> addLike({
+    required String postId,
+    required String userId,
+    required String nickname,
+    required DateTime createdAt,
+  });
+
+  /// 좋아요 취소
+  Future<void> removeLike({
+    required String postId,
+    required String userId,
+  });
 }

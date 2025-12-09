@@ -7,8 +7,14 @@ import 'package:cute_story_closed_sns_app/presentation/pages/comments/comment_di
 class CommentsPage extends ConsumerStatefulWidget {
   final String postId;
   final VoidCallback? onClose;
-  const CommentsPage({Key? key, required this.postId, this.onClose})
-    : super(key: key);
+  final ScrollController scrollController;
+
+  const CommentsPage({
+    Key? key,
+    required this.postId,
+    this.onClose,
+    required this.scrollController,
+  }) : super(key: key);
 
   @override
   ConsumerState<CommentsPage> createState() => _CommentsPageState();
@@ -24,7 +30,7 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
     final isLoading = viewModel.isLoading;
     return Container(
       height: 400,
-      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
+      decoration: BoxDecoration(color: Colors.white.withOpacity(0.1)),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(

@@ -30,6 +30,7 @@ class PostRepositoryImpl implements PostRepository {
             likeCount: dto.likeCount,
             commentCount: dto.commentCount,
             createdAt: dto.createdAt.toDate(),
+            likedByMe: false,
           ),
         )
         .toList();
@@ -51,6 +52,7 @@ class PostRepositoryImpl implements PostRepository {
       likeCount: dto.likeCount,
       commentCount: dto.commentCount,
       createdAt: dto.createdAt.toDate(),
+      likedByMe: false,
     );
   }
 
@@ -91,5 +93,36 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<void> deletePost(String postId) async {
     await _postDataSource.deletePost(postId);
+  }
+
+  @override
+  Future<bool> isLiked({
+    required String postId,
+    required String userId,
+  }) {
+    return _postDataSource.isLiked(postId: postId, userId: userId);
+  }
+
+  @override
+  Future<void> addLike({
+    required String postId,
+    required String userId,
+    required String nickname,
+    required DateTime createdAt,
+  }) {
+    return _postDataSource.addLike(
+      postId: postId,
+      userId: userId,
+      nickname: nickname,
+      createdAt: createdAt,
+    );
+  }
+
+  @override
+  Future<void> removeLike({
+    required String postId,
+    required String userId,
+  }) {
+    return _postDataSource.removeLike(postId: postId, userId: userId);
   }
 }
