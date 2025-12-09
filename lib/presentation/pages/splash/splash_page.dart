@@ -1,4 +1,6 @@
+import 'package:cute_story_closed_sns_app/core/auth/google_login_service.dart';
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/splash/popup/nickname_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -38,7 +40,18 @@ class SplashPage extends HookWidget {
                       color: Colors.white,
                       icon: Icons.language,
                       text: "구글로 로그인하기",
-                      onTap: () {},
+                      onTap: () async {
+                        final userCredential = await GoogleLoginService()
+                            .signInWithGoogle();
+                        final user = userCredential?.user;
+                        if (user == null) return;
+                        await showNicknamePopup(
+                          context,
+                          uid: user.uid,
+                          email: user.email ?? '',
+                          provider: 'google',
+                        );
+                      },
                     ),
                     SizedBox(height: 10),
                     button(
@@ -79,7 +92,7 @@ class SplashPage extends HookWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 25, color: Colors.black,),
+            Icon(icon, size: 25, color: Colors.black),
             const SizedBox(width: 8),
             Text(
               text,
