@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class CsButton extends StatelessWidget {
   final BuildContext context;
   final String text;
+  final VoidCallback? onPressed;
 
   const CsButton({
     super.key,
     required this.context,
     required this.text,
+    this.onPressed,
   });
 
   @override
@@ -16,7 +18,7 @@ class CsButton extends StatelessWidget {
     return SizedBox(
       height: 60,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: vrc(context).brand,
           foregroundColor: vrc(context).background200,
