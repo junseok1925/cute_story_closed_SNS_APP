@@ -1,5 +1,6 @@
 import 'package:cute_story_closed_sns_app/core/config/firebase_options.dart';
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/add/add_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_page.dart';

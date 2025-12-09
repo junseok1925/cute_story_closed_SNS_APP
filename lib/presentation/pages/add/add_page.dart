@@ -1,50 +1,24 @@
-import 'dart:io';
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_page.dart';
+import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'widgets/media_picker_box.dart';
 import 'widgets/cs_text_field.dart';
 import 'widgets/cs_button.dart';
 
-class AddPage extends HookWidget {
+class AddPage extends HookConsumerWidget {
   const AddPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final titleController = useTextEditingController();
     final tagController = useTextEditingController();
 
-    final pickedFile = useState<XFile?>(null);
-    final videoController = useState<VideoPlayerController?>(null);
-
-    Future<void> pickImage() async {
-      final picker = ImagePicker();
-      final file = await picker.pickImage(source: ImageSource.gallery);
-
-      if (file != null) {
-        pickedFile.value = file;
-        videoController.value?.dispose();
-        videoController.value = null;
-      }
-    }
-
-    Future<void> pickVideo() async {
-      final picker = ImagePicker();
-      final file = await picker.pickVideo(source: ImageSource.gallery);
-
-      if (file != null) {
-        pickedFile.value = file;
-
-        final controller = VideoPlayerController.file(File(file.path));
-        await controller.initialize();
-        controller.setLooping(true);
-        controller.play();
-        videoController.value = controller;
-      }
-    }
+    final state = ref.watch(addPostViewModelProvider);
+    final viewModel = ref.read(addPostViewModelProvider.notifier);
 
     return Scaffold(
       backgroundColor: vrc(context).background100,
@@ -55,10 +29,10 @@ class AddPage extends HookWidget {
             child: Column(
               children: [
                 MediaPickerBox(
-                  pickedFile: pickedFile.value,
-                  controller: videoController.value,
-                  onTapImage: pickImage,
-                  onLongPressVideo: pickVideo,
+                  pickedFile: state.pickedFile,
+                  controller: state.videoController,
+                  onTapImage: () => viewModel.pickImage(),
+                  onLongPressVideo: () => viewModel.pickVideo(),
                 ),
 
                 const SizedBox(height: 15),
@@ -77,13 +51,46 @@ class AddPage extends HookWidget {
                   hint: "태그를 입력해주세요",
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
+
+                if (state.error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      state.error!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
 
                 Row(
                   children: [
-                    Expanded(child: CsButton(context: context, text: "취소")),
+                    Expanded(
+                      child: CsButton(
+                        context: context,
+                        text: "취소",
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
                     const SizedBox(width: 10),
-                    Expanded(child: CsButton(context: context, text: "게시")),
+                    Expanded(
+                      child: CsButton(
+                        context: context,
+                        text: state.isLoading ? "게시 중..." : "게시",
+                        onPressed: state.isLoading
+                            ? null
+                            : () async {
+                                await viewModel.uploadPost(
+                                  content: titleController.text,
+                                  authorId: "TEST_USER",
+                                  nickname: "닉네임",
+                                );
+
+                                if (state.error == null && context.mounted) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PostListPage()));
+                                }
+                              },
+                      ),
+                    ),
                   ],
                 ),
               ],
