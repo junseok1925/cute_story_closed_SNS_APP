@@ -1,7 +1,21 @@
+import 'package:cute_story_closed_sns_app/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'nickname_popup_viewmodel.dart';
+import '../../../../data/repository/user_repository_impl.dart';
 
-Future<void> showNicknamePopup(BuildContext context) {
+Future<void> showNicknamePopup(
+  BuildContext context, {
+  required String uid,
+  required String email,
+  required String provider,
+}) {
   final nicknameController = TextEditingController();
+  final viewModel = NicknamePopupViewModel(
+    userRepository: UserRepositoryImpl(),
+    uid: uid,
+    email: email,
+    provider: provider,
+  );
 
   return showModalBottomSheet(
     context: context,
@@ -63,6 +77,13 @@ Future<void> showNicknamePopup(BuildContext context) {
                           ),
                         ),
                       ),
+                      onSubmitted: (value) async {
+                        await viewModel.saveNickname(value);
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (_) => HomePage()),
+                        );
+                      },
                     ),
                   ],
                 ),
