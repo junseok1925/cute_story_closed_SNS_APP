@@ -15,7 +15,6 @@ import 'package:cute_story_closed_sns_app/data/data_source/post_data_source_impl
 import 'package:cute_story_closed_sns_app/data/repository/post_repository_impl.dart';
 import 'package:cute_story_closed_sns_app/domain/repository/post_repository.dart';
 import 'package:cute_story_closed_sns_app/domain/usercase/fetch_posts_usercase.dart';
-import 'package:cute_story_closed_sns_app/domain/usercase/toggle_like_usecase.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/comment_data_source.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/comment_data_source_impl.dart';
 import 'package:cute_story_closed_sns_app/data/repository/comment_repository_impl.dart';
@@ -23,6 +22,8 @@ import 'package:cute_story_closed_sns_app/domain/repository/comment_repository.d
 import 'package:cute_story_closed_sns_app/domain/usercase/comment_usecases.dart';
 import 'package:cute_story_closed_sns_app/domain/usercase/comment_update_delete_usecases.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page_view_model.dart';// 시윤 작업
+import 'package:cute_story_closed_sns_app/domain/entity/post.dart'; //  시윤 작업 
 
 final updateCommentUsecaseProvider = Provider<UpdateCommentUsecase>((ref) {
   final repo = ref.read(commentRepositoryProvider);
@@ -94,3 +95,11 @@ final addPostViewModelProvider =
       final uploadFile = ref.watch(uploadFileUsecaseProvider); // Storage 업로드
       return AddPostViewModel(uploadPost, uploadFile);
     });
+
+final myPageViewModelProvider = // 시윤 MYPAGE 작업 
+    StateNotifierProvider<MyPageViewModel, List<Post>>((ref) {
+  final fetchPosts = ref.watch(fetchPostsUsecaseProvider);
+  final postRepo = ref.watch(postRepositoryProvider);
+
+  return MyPageViewModel(fetchPosts, postRepo);
+});
