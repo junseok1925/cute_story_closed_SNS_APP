@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cute_story_closed_sns_app/data/data_source/like_data_source.dart';
-import 'package:cute_story_closed_sns_app/data/data_source/like_data_source_impl.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/storage_data_source.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/storage_data_source_impl.dart';
 import 'package:cute_story_closed_sns_app/data/repository/storage_repository_impl.dart';
@@ -14,11 +12,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/post_data_source.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/post_data_source_impl.dart';
-import 'package:cute_story_closed_sns_app/data/repository/like_repository_impl.dart';
 import 'package:cute_story_closed_sns_app/data/repository/post_repository_impl.dart';
-import 'package:cute_story_closed_sns_app/domain/repository/like_repository.dart';
 import 'package:cute_story_closed_sns_app/domain/repository/post_repository.dart';
 import 'package:cute_story_closed_sns_app/domain/usercase/fetch_posts_usercase.dart';
+import 'package:cute_story_closed_sns_app/domain/usercase/toggle_like_usecase.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/comment_data_source.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/comment_data_source_impl.dart';
 import 'package:cute_story_closed_sns_app/data/repository/comment_repository_impl.dart';
@@ -49,16 +46,8 @@ final fetchPostsUsecaseProvider = Provider<FetchPostsUsecase>((ref) {
   return FetchPostsUsecase(ref.read(postRepositoryProvider));
 });
 
-final likeDataSourceProvider = Provider<LikeDataSource>((ref) {
-  return LikeDataSourceImpl();
-});
-
-final likeRepositoryProvider = Provider<LikeRepository>((ref) {
-  return LikeRepositoryImpl(ref.read(likeDataSourceProvider));
-});
-
 final toggleLikeUsecaseProvider = Provider<ToggleLikeUsecase>((ref) {
-  return ToggleLikeUsecase(ref.read(likeRepositoryProvider));
+  return ToggleLikeUsecase(ref.read(postRepositoryProvider));
 });
 
 final commentDataSourceProvider = Provider<CommentDataSource>((ref) {
@@ -101,7 +90,7 @@ final uploadPostUseCaseProvider = Provider<UploadPostUseCase>((ref) {
 
 final addPostViewModelProvider =
     StateNotifierProvider<AddPostViewModel, AddPostState>((ref) {
-  final uploadPost = ref.watch(uploadPostUseCaseProvider);
-  final uploadFile = ref.watch(uploadFileUsecaseProvider); // Storage 업로드
-  return AddPostViewModel(uploadPost, uploadFile);
-});
+      final uploadPost = ref.watch(uploadPostUseCaseProvider);
+      final uploadFile = ref.watch(uploadFileUsecaseProvider); // Storage 업로드
+      return AddPostViewModel(uploadPost, uploadFile);
+    });

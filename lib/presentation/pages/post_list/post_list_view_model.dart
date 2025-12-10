@@ -9,53 +9,54 @@ class PostListViewModel extends Notifier<List<Post>?> {
     return null;
   }
 
-  /// ------------------------------
   /// Firestore 에서 게시글 불러오기
-  /// ------------------------------
   Future<void> fetchPosts() async {
+    const mockUserId = 'testUser1';
+
     final posts = await ref.read(fetchPostsUsecaseProvider).execute();
-    state = posts;
-  }
 
-  /// ------------------------------
-  /// 좋아요 토글 (Optimistic Update)
-  /// ------------------------------
-  Future<void> toggleLike(
-    Post post, {
-    required String userId,
-    required String nickname,
-  }) async {
-    if (state == null) return;
-
-    // 이전 좋아요 상태 조회
-    final alreadyLiked = await ref
-        .read(likeRepositoryProvider)
-        .isLiked(post.postId, userId);
-
-    final updatedPost = post.copyWith(
-      likeCount: alreadyLiked ? post.likeCount - 1 : post.likeCount + 1,
+    // 각 게시물에 대해 내가 이미 좋아요 했는지 확인 (mockUserId 기준)
+    final repo = ref.read(postRepositoryProvider);
+    final updated = await Future.wait(
+      posts.map((post) async {
+        final liked = await repo.isLiked(
+          postId: post.postId,
+          userId: mockUserId,
+        );
+        return post.copyWith(likedByMe: liked);
+      }),
     );
 
-    final oldState = state; // 롤백 대비
+    state = updated;
+  }
 
-    // UI 즉시 반영
-    state = [
-      for (final p in state!)
-        if (p.postId == post.postId) updatedPost else p,
-    ];
+  /// 좋아요 추가 (단순 +1)
+  Future<void> toggleLike(Post target) async {
+    // 테스트 목데이터
+    const mockUserId = 'testUser1';
+    const mockNickname = '강준석';
 
-    try {
-      final result = await ref
-          .read(toggleLikeUsecaseProvider)
-          .execute(postId: post.postId, userId: userId, nickname: nickname);
+    final isLikedNow = await ref
+        .read(toggleLikeUsecaseProvider)
+        .execute(
+          postId: target.postId,
+          userId: mockUserId,
+          nickname: mockNickname,
+        );
 
-      // result == true  → 좋아요 성공
-      // result == false → 좋아요 취소됨
-    } catch (e) {
-      // 서버 반영 실패 → UI 롤백
-      state = oldState;
-      rethrow;
-    }
+    // 로컬 상태도 즉시 반영 (isLikedNow true면 +1, false면 -1)
+    final current = state;
+    if (current == null) return;
+    state = current
+        .map(
+          (post) => post.postId == target.postId
+              ? post.copyWith(
+                  likeCount: post.likeCount + (isLikedNow ? 1 : -1),
+                  likedByMe: isLikedNow,
+                )
+              : post,
+        )
+        .toList();
   }
 }
 

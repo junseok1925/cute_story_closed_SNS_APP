@@ -8,6 +8,7 @@ class Post {
   final String nickname; // 작성자 닉네임
   final int likeCount; // 좋아요 수
   final int commentCount; // 댓글 수
+  final bool likedByMe; // 내가 좋아요 눌렀는지 여부 (클라이언트 상태)
 
   const Post({
     required this.postId,
@@ -19,9 +20,14 @@ class Post {
     required this.nickname,
     required this.likeCount,
     required this.commentCount,
+    this.likedByMe = false,
   });
 
-  Post copyWith({int? likeCount, int? commentCount}) {
+  Post copyWith({
+    int? likeCount,
+    int? commentCount,
+    bool? likedByMe,
+  }) {
     return Post(
       postId: postId,
       authorId: authorId,
@@ -32,6 +38,7 @@ class Post {
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,
       createdAt: createdAt,
+      likedByMe: likedByMe ?? this.likedByMe,
     );
   }
 }
