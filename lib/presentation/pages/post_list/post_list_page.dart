@@ -1,3 +1,4 @@
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
@@ -61,9 +62,9 @@ class PostListPage extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
                 constraints: BoxConstraints(minHeight: screenHeight * 0.32),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black87],
+                    colors: [Colors.transparent, vrc(context).shadow!],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -78,9 +79,9 @@ class PostListPage extends ConsumerWidget {
                       children: [
                         Text(
                           formatTime(post.createdAt),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white70,
+                            color: vrc(context).textColor200,
                           ),
                         ),
                         const Spacer(),
@@ -98,13 +99,13 @@ class PostListPage extends ConsumerWidget {
                                     : Icons.favorite_border,
                                 size: 28,
                                 color: post.likedByMe
-                                    ? Colors.redAccent
-                                    : Colors.white,
+                                    ? fxc(context).brandColor
+                                    : vrc(context).textColor200,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 post.likeCount.toString(),
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: vrc(context).textColor200),
                               ),
                             ],
                           ),
@@ -119,15 +120,15 @@ class PostListPage extends ConsumerWidget {
                           },
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.comment,
                                 size: 28,
-                                color: Colors.white70,
+                                color: vrc(context).textColor200,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 post.commentCount.toString(),
-                                style: const TextStyle(color: Colors.white70),
+                                style: TextStyle(color: vrc(context).textColor200),
                               ),
                             ],
                           ),
@@ -140,10 +141,10 @@ class PostListPage extends ConsumerWidget {
                     /// 닉네임
                     Text(
                       post.nickname,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
-                        color: Colors.white,
+                        color: vrc(context).textColor200,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -151,7 +152,7 @@ class PostListPage extends ConsumerWidget {
                     /// 게시글 내용
                     Text(
                       post.content,
-                      style: const TextStyle(fontSize: 15, color: Colors.white),
+                      style: TextStyle(fontSize: 15, color: vrc(context).textColor200),
                     ),
                   ],
                 ),
@@ -168,7 +169,7 @@ class PostListPage extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent, // 배경을 투명하게 유지
-      barrierColor: Colors.black54, // dim 효과
+      barrierColor: vrc(context).shadow, // dim 효과
       builder: (ctx) {
         // 배경 클릭시에도 닫히게 GestureDetector로 처리
         return GestureDetector(
@@ -188,8 +189,8 @@ class PostListPage extends ConsumerWidget {
                     behavior: HitTestBehavior.translucent,
                     onTap: () {}, // 시트 내부는 닫히지 않도록
                     child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.black87,
+                      decoration: BoxDecoration(
+                        color: vrc(context).background200!.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(18),
                         ),

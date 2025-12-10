@@ -20,7 +20,7 @@ class SplashPage extends HookWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: vrc(context).background100,
+      backgroundColor: fxc(context).secondColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18),
@@ -52,14 +52,6 @@ class SplashPage extends HookWidget {
                           provider: 'google',
                         );
                       },
-                    ),
-                    SizedBox(height: 10),
-                    button(
-                      context,
-                      color: Colors.amber,
-                      icon: Icons.chat_rounded,
-                      text: "카카오로 로그인하기",
-                      onTap: () {},
                     ),
                   ],
                 ),

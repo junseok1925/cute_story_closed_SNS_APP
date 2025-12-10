@@ -1,3 +1,4 @@
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'nickname_popup_viewmodel.dart';
@@ -38,7 +39,7 @@ Future<void> showNicknamePopup(
                 width: 336,
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: vrc(context).background200,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(
@@ -52,7 +53,7 @@ Future<void> showNicknamePopup(
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFDCDBCD),
+                          color: fxc(context).brandColor,
                         ),
                       ),
                     ),
@@ -64,15 +65,15 @@ Future<void> showNicknamePopup(
                       decoration: InputDecoration(
                         hintText: "활발한 부엉이",
                         filled: true,
-                        fillColor: Color(0xFFDCDBCD),
+                        fillColor: vrc(context).background200,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: Colors.white, width: 2),
+                          borderSide: BorderSide(color: fxc(context).brandColor!, width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide(
-                            color: Color(0xFFDCDBCD),
+                            color: vrc(context).background200!,
                             width: 2,
                           ),
                         ),

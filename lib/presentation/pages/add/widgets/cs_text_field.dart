@@ -23,7 +23,7 @@ class CsTextField extends StatelessWidget {
         fillColor: vrc(context).background200,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: vrc(context).brand!, width: 2),
+          borderSide: BorderSide(color: fxc(context).brandColor!, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),

@@ -1,3 +1,4 @@
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
@@ -9,7 +10,7 @@ class MyPage extends ConsumerWidget {
     final postList = ref.watch(myPageViewModelProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4F0),
+      backgroundColor: vrc(context).background100,
       body: SafeArea(
         child: ListView.builder(
           itemCount: postList.length,
@@ -30,7 +31,7 @@ class MyPage extends ConsumerWidget {
       height: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: Colors.grey[300],
+        color: vrc(context).background200,
       ),
       child: Stack(
         children: [
@@ -59,11 +60,11 @@ class MyPage extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: vrc(context).background200,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child:
-                    const Icon(Icons.delete, color: Colors.red, size: 20),
+                    Icon(Icons.delete, color: fxc(context).brandColor, size: 20),
               ),
             ),
           ),
