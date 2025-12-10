@@ -1,4 +1,5 @@
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,17 +53,17 @@ class PostListPage extends ConsumerWidget {
               child: Image.network(post.mediaUrl, fit: BoxFit.cover),
             ),
 
-            /// ⬆⬇ 하단 오버레이 UI
+            /// 하단 오버레이
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
-                constraints: BoxConstraints(minHeight: screenHeight * 0.2),
+                constraints: BoxConstraints(minHeight: screenHeight * 0.32),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black54],
+                    colors: [Colors.transparent, Colors.black87],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -86,21 +87,19 @@ class PostListPage extends ConsumerWidget {
 
                         /// 좋아요 버튼
                         GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(postListViewModelProvider.notifier)
-                                .toggleLike(
-                                  post,
-                                  userId: "testUser1",
-                                  nickname: "강준석",
-                                );
-                          },
+                          onTap: () => ref
+                              .read(postListViewModelProvider.notifier)
+                              .toggleLike(post),
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.favorite,
+                              Icon(
+                                post.likedByMe
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
                                 size: 28,
-                                color: Colors.white,
+                                color: post.likedByMe
+                                    ? Colors.redAccent
+                                    : Colors.white,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -116,10 +115,7 @@ class PostListPage extends ConsumerWidget {
                         /// 댓글 버튼
                         GestureDetector(
                           onTap: () {
-                            print("댓글 페이지로 이동 예정: ${post.postId}");
-                            // Navigator.push(context, MaterialPageRoute(
-                            //   builder: (_) => CommentPage(postId: post.postId),
-                            // ));
+                            _showCommentsBottomSheet(context, post.postId);
                           },
                           child: Row(
                             children: [
@@ -162,6 +158,54 @@ class PostListPage extends ConsumerWidget {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showCommentsBottomSheet(BuildContext context, String postId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // 배경을 투명하게 유지
+      barrierColor: Colors.black54, // dim 효과
+      builder: (ctx) {
+        // 배경 클릭시에도 닫히게 GestureDetector로 처리
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque, // 빈 공간 터치 감지
+          onTap: () => Navigator.pop(context), // 배경 탭 -> 닫힘
+          child: Stack(
+            children: [
+              Positioned.fill(child: Container(color: Colors.transparent)),
+
+              /// 여기가 댓글 BottomSheet
+              DraggableScrollableSheet(
+                initialChildSize: 0.65,
+                minChildSize: 0.5,
+                maxChildSize: 0.9,
+                builder: (_, scrollController) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {}, // 시트 내부는 닫히지 않도록
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(18),
+                        ),
+                      ),
+                      child: CommentsPage(
+                        postId: postId,
+                        scrollController:
+                            scrollController, // 전달 필수 -> 스크롤 내려서 닫히게
+                        onClose: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         );
       },
     );

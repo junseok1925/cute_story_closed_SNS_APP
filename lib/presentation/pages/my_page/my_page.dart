@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
+import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 
-class MyPage extends StatelessWidget {
+class MyPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final postList = ref.watch(myPageViewModelProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFF4F0),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: 20,
+          itemCount: postList.length,
           itemBuilder: (context, index) {
+            final post = postList[index];
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: item(index),
+              padding: const EdgeInsets.all(12),
+              child: item(context, ref, post),
             );
           },
         ),
@@ -19,81 +25,50 @@ class MyPage extends StatelessWidget {
     );
   }
 
-Widget item(int index) {
-  return Container(
-    width: double.infinity,
-    height: 155,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(20),
-      color: Colors.grey[200],
-    ),
-    child: Stack(
-      children: [
-        /// ✅ 1️⃣ 배경 전체 이미지 (카드 꽉 채움)
-        ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Image.network(
-            "https://picsum.photos/600/400?random=$index",
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ),
-
-        Positioned(
-          top: 8,
-          left: 8,
-          child: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.85),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.delete,
-              size: 18,
-              color: Colors.red,
+  Widget item(BuildContext context, WidgetRef ref, Post post) {
+    return Container(
+      height: 150,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.grey[300],
+      ),
+      child: Stack(
+        children: [
+          // ✅ 이미지
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.network(
+              post.mediaUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
-        ),
-      
 
-      
-        Positioned(
-          right: 12,
-          bottom: 12,
-          child: Column(
-            children: const [
-              /// ❤️ 좋아요
-              Column(
-                children: [
-                  Icon(Icons.thumb_up_alt_outlined, color: Colors.white),
-                  SizedBox(height: 4),
-                  Text(
-                    "10.0k",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
+          // ✅ 삭제 버튼
+          Positioned(
+            top: 10,
+            left: 10,
+            child: GestureDetector(
+              onTap: () {
+                print("🔥 UI에서 삭제 버튼 눌림: ${post.postId}");
+                ref
+                    .read(myPageViewModelProvider.notifier)
+                    .deletePost(post.postId);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child:
+                    const Icon(Icons.delete, color: Colors.red, size: 20),
               ),
-
-              SizedBox(height: 16),
-
-              /// 💬 댓글
-              Column(
-                children: [
-                  Icon(Icons.chat_bubble_outline, color: Colors.white),
-                  SizedBox(height: 4),
-                  Text(
-                    "3.4k",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }
