@@ -1,3 +1,4 @@
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -28,24 +29,24 @@ class CommentItem extends StatelessWidget {
                 comment.nickname,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: vrc(context).textColor100,
                 ),
               ),
               Spacer(),
               if (isMine) ...[
                 SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.edit, size: 18, color: Colors.white54),
+                  icon: Icon(Icons.edit, size: 18, color: vrc(context).textColor100),
                   onPressed: onEdit,
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete, size: 18, color: Colors.white54),
+                  icon: Icon(Icons.delete, size: 18, color: vrc(context).textColor100),
                   onPressed: onDelete,
                 ),
               ],
             ],
           ),
-          Text(comment.content, style: TextStyle(color: Colors.white)),
+          Text(comment.content, style: TextStyle(color: vrc(context).textColor100)),
         ],
       ),
     );

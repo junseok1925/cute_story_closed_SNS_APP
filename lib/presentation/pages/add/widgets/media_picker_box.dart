@@ -43,7 +43,7 @@ class MediaPickerBox extends StatelessWidget {
           Icon(
             Icons.camera_alt_rounded,
             size: 270,
-            color: vrc(context).background100,
+            color: fxc(context).brandColor,
           ),
           const Positioned(
             bottom: 40,

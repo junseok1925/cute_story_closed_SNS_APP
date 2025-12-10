@@ -1,7 +1,6 @@
 import 'package:cute_story_closed_sns_app/core/config/firebase_options.dart';
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/home/home_page.dart';
-import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/splash/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +23,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cute Story SNS',
       theme: AppTheme.light,
-      home: HomePage(),
-      //home: SplashPage(),
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.dark,
+      home: SplashPage(),
     );
   }
 }
