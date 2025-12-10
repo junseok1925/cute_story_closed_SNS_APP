@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,8 +7,8 @@ import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
 
-// ✅ 방금 만든 바텀시트 위젯 import
-import 'package:cute_story_closed_sns_app/presentation/pages/my_page/mypage_bottom_sheet.dart';
+//  방금 만든 바텀시트 위젯 import
+import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page_bottom_sheet.dart';
 
 class MyPage extends ConsumerWidget {
   const MyPage({super.key});
