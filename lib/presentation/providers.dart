@@ -9,6 +9,7 @@ import 'package:cute_story_closed_sns_app/domain/usercase/upload_post_usecase.da
 import 'package:cute_story_closed_sns_app/presentation/pages/add/add_post_state.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/add/add_post_view_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/post_data_source.dart';
 import 'package:cute_story_closed_sns_app/data/data_source/post_data_source_impl.dart';
@@ -22,8 +23,21 @@ import 'package:cute_story_closed_sns_app/domain/repository/comment_repository.d
 import 'package:cute_story_closed_sns_app/domain/usercase/comment_usecases.dart';
 import 'package:cute_story_closed_sns_app/domain/usercase/comment_update_delete_usecases.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:cute_story_closed_sns_app/data/repository/user_repository_impl.dart';
+import 'package:cute_story_closed_sns_app/domain/repository/user_repository.dart';
+import 'package:cute_story_closed_sns_app/domain/entity/user.dart' as domain_user;
 import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page_view_model.dart';// 시윤 작업
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart'; //  시윤 작업 
+
+final userRepositoryProvider = Provider<UserRepository>((ref) {
+  return UserRepositoryImpl();
+});
+
+final currentUserProvider = FutureProvider<domain_user.User?>((ref) async {
+  final firebaseUser = fb_auth.FirebaseAuth.instance.currentUser;
+  if (firebaseUser == null) return null;
+  return ref.read(userRepositoryProvider).fetchUser(firebaseUser.uid);
+});
 
 final updateCommentUsecaseProvider = Provider<UpdateCommentUsecase>((ref) {
   final repo = ref.read(commentRepositoryProvider);

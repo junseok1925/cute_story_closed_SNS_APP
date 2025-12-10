@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/comment.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 
 class CommentsViewModel {
   final Ref ref;
@@ -13,23 +14,29 @@ class CommentsViewModel {
   bool get isLoading => _isLoading;
   bool _isLoading = false;
 
-  // 로그인 정보 사용
-  String get currentUserId => 'test_user';
+  String get _currentUserId =>
+      fb_auth.FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  bool isMine(Comment c) => c.userId == currentUserId;
+  bool isMine(Comment c) => c.userId == _currentUserId;
 
   Future<void> addComment(String text) async {
     if (text.isEmpty || isLoading) return;
     _isLoading = true;
-    final comment = Comment(
-      postId: postId,
-      userId: currentUserId,
-      nickname: '익명',
-      content: text,
-      createdAt: DateTime.now(),
-    );
-    await ref.read(addCommentUsecaseProvider).execute(comment);
-    _isLoading = false;
+    try {
+      final user = await ref.read(currentUserProvider.future);
+      if (user == null) return;
+
+      final comment = Comment(
+        postId: postId,
+        userId: user.id,
+        nickname: user.nickname,
+        content: text,
+        createdAt: DateTime.now(),
+      );
+      await ref.read(addCommentUsecaseProvider).execute(comment);
+    } finally {
+      _isLoading = false;
+    }
   }
 
   Future<void> updateComment(Comment c, String newContent) async {

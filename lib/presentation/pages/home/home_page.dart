@@ -5,14 +5,25 @@ import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key, this.initialIndex = 0});
+
+  final int initialIndex;
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int selectedIndex = 0;
+  late int selectedIndex;
 
   final pages = [PostListPage(), AddPage(), MyPage()];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.initialIndex;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

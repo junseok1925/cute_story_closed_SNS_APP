@@ -1,5 +1,6 @@
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
-import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_page.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/home/home_page.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -19,6 +20,7 @@ class AddPage extends HookConsumerWidget {
 
     final state = ref.watch(addPostViewModelProvider);
     final viewModel = ref.read(addPostViewModelProvider.notifier);
+    final currentUserAsync = ref.watch(currentUserProvider);
 
     return Scaffold(
       backgroundColor: vrc(context).background100,
@@ -75,18 +77,37 @@ class AddPage extends HookConsumerWidget {
                     Expanded(
                       child: CsButton(
                         context: context,
-                        text: state.isLoading ? "게시 중..." : "게시",
-                        onPressed: state.isLoading
+                        text: state.isLoading || currentUserAsync.isLoading
+                            ? "게시 중..."
+                            : "게시",
+                        onPressed: state.isLoading || currentUserAsync.isLoading
                             ? null
                             : () async {
+                                final user = currentUserAsync.value;
+                                if (user == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("로그인 정보를 불러오지 못했습니다."),
+                                    ),
+                                  );
+                                  return;
+                                }
                                 await viewModel.uploadPost(
                                   content: titleController.text,
-                                  authorId: "TEST_USER",
-                                  nickname: "닉네임",
+                                  authorId: user.id,
+                                  nickname: user.nickname,
                                 );
 
                                 if (state.error == null && context.mounted) {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PostListPage()));
+                                  // 새 게시글을 쓰면 post_list에 바로 보이게 함 크크루빙빙봉
+                                  ref.invalidate(postListViewModelProvider);
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const HomePage(initialIndex: 0),
+                                    ),
+                                  );
                                 }
                               },
                       ),
