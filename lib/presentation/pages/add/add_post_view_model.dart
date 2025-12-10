@@ -14,6 +14,11 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
   final UploadFileUseCase _uploadFile;
   final picker = ImagePicker();
 
+  void reset() {
+    state.videoController?.dispose();
+    state = const AddPostState();
+  }
+
   // 이미지 선택
   Future<void> pickImage() async {
     final file = await picker.pickImage(source: ImageSource.gallery);
@@ -48,6 +53,7 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
     required String content,
     required String authorId,
     required String nickname,
+    required String location,
   }) async {
     if (state.pickedFile == null) {
       state = state.copyWith(error: "이미지 또는 동영상을 선택해주세요");
@@ -73,6 +79,7 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
         createdAt: DateTime.now(),
         authorId: authorId,
         nickname: nickname,
+        location: location,
         likeCount: 0,
         commentCount: 0,
       );
@@ -80,7 +87,7 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
       // 3) Firestore 업로드
       await _uploadPost(post);
 
-      state = state.copyWith(isLoading: false);
+      reset();
 
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());

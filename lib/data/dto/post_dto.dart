@@ -9,6 +9,7 @@ class PostDto {
   final Timestamp createdAt; // Firestore Timestamp
   final String authorId;
   final String nickname;
+  final String? location;
   final int likeCount;
   final int commentCount;
 
@@ -20,6 +21,7 @@ class PostDto {
     required this.createdAt,
     required this.authorId,
     required this.nickname,
+    this.location,
     required this.likeCount,
     required this.commentCount,
   });
@@ -34,6 +36,7 @@ class PostDto {
           createdAt: map['createdAt'],
           authorId: map['authorId'],
           nickname: map['nickname'],
+          location: map['location'],
           likeCount: (map['likeCount'] ?? 0),
           commentCount: (map['commentCount'] ?? 0),
         );
@@ -50,6 +53,7 @@ class PostDto {
       createdAt: data['createdAt'],
       authorId: data['authorId'],
       nickname: data['nickname'],
+      location: data['location'],
       likeCount: (data['likeCount'] ?? 0),
       commentCount: (data['commentCount'] ?? 0),
     );
@@ -65,6 +69,7 @@ class PostDto {
       'createdAt': createdAt,
       'authorId': authorId,
       'nickname': nickname,
+      'location': location,
       'likeCount': likeCount,
       'commentCount': commentCount,
     };

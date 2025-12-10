@@ -15,23 +15,36 @@ class PostDataSourceImpl implements PostDataSource {
   Future<List<PostDto>> fetchPosts({
     int limit = 10,
     DateTime? startAfter,
+    String? location,
   }) async {
-    Query query = _postsCol.orderBy('createdAt', descending: true).limit(limit);
-
-    // 페이징 처리
-    if (startAfter != null) {
-      query = query.startAfter([Timestamp.fromDate(startAfter)]);
+    Query query;
+    if (location != null && location.isNotEmpty) {
+      // Firestore composite index 없이 동작하도록 location만 필터링 후 클라이언트에서 정렬
+      query = _postsCol.where('location', isEqualTo: location);
+    } else {
+      query = _postsCol.orderBy('createdAt', descending: true).limit(limit);
+      // 페이징 처리
+      if (startAfter != null) {
+        query = query.startAfter([Timestamp.fromDate(startAfter)]);
+      }
     }
 
     final snapshot = await query.get();
 
-    return snapshot.docs
+    final list = snapshot.docs
         .map(
           (doc) => PostDto.fromDoc(
             doc as DocumentSnapshot<Map<String, dynamic>>,
           ),
         )
         .toList();
+
+    // location 필터 사용 시에는 클라이언트에서 최신순 정렬
+    if (location != null && location.isNotEmpty) {
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    }
+
+    return list;
   }
 
   @override

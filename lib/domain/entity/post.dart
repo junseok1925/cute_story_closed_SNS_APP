@@ -6,6 +6,7 @@ class Post {
   final DateTime createdAt; // Timestamp → DateTime 변환
   final String authorId; // 작성자 UID
   final String nickname; // 작성자 닉네임
+  final String? location; // 작성 위치(행정동 주소)
   final int likeCount; // 좋아요 수
   final int commentCount; // 댓글 수
   final bool likedByMe; // 내가 좋아요 눌렀는지 여부 (클라이언트 상태)
@@ -18,6 +19,7 @@ class Post {
     required this.createdAt,
     required this.authorId,
     required this.nickname,
+    this.location,
     required this.likeCount,
     required this.commentCount,
     this.likedByMe = false,
@@ -35,6 +37,7 @@ class Post {
       mediaUrl: mediaUrl,
       mediaType: mediaType,
       content: content,
+      location: location,
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,
       createdAt: createdAt,

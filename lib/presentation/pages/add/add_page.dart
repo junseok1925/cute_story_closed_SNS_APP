@@ -21,6 +21,7 @@ class AddPage extends HookConsumerWidget {
     final state = ref.watch(addPostViewModelProvider);
     final viewModel = ref.read(addPostViewModelProvider.notifier);
     final currentUserAsync = ref.watch(currentUserProvider);
+    final cachedAddressAsync = ref.watch(cachedAddressProvider);
 
     return Scaffold(
       backgroundColor: vrc(context).background100,
@@ -70,7 +71,10 @@ class AddPage extends HookConsumerWidget {
                       child: CsButton(
                         context: context,
                         text: "취소",
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          ref.read(addPostViewModelProvider.notifier).reset();
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -80,7 +84,9 @@ class AddPage extends HookConsumerWidget {
                         text: state.isLoading || currentUserAsync.isLoading
                             ? "게시 중..."
                             : "게시",
-                        onPressed: state.isLoading || currentUserAsync.isLoading
+                        onPressed: state.isLoading ||
+                                currentUserAsync.isLoading ||
+                                cachedAddressAsync.isLoading
                             ? null
                             : () async {
                                 final user = currentUserAsync.value;
@@ -92,10 +98,20 @@ class AddPage extends HookConsumerWidget {
                                   );
                                   return;
                                 }
+                                final location = cachedAddressAsync.value;
+                                if (location == null || location.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("위치 정보를 불러오지 못했습니다."),
+                                    ),
+                                  );
+                                  return;
+                                }
                                 await viewModel.uploadPost(
                                   content: titleController.text,
                                   authorId: user.id,
                                   nickname: user.nickname,
+                                  location: location,
                                 );
 
                                 if (state.error == null && context.mounted) {

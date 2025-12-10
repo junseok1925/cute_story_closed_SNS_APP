@@ -1,5 +1,6 @@
 import 'package:cute_story_closed_sns_app/core/auth/google_login_service.dart';
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:cute_story_closed_sns_app/core/location_cache_manager.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/splash/popup/nickname_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,6 +13,8 @@ class SplashPage extends HookWidget {
     final showLoginButton = useState(false);
 
     useEffect(() {
+      // 위치 권한/주소 로딩 및 스트리밍을 앱 전역 매니저에 위임
+      LocationCacheManager.start();
       Future.delayed(Duration(seconds: 2), () {
         showLoginButton.value = true;
       });

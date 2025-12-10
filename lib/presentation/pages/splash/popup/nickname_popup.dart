@@ -18,6 +18,17 @@ Future<void> showNicknamePopup(
     provider: provider,
   );
 
+  Future<void> submitNickname(BuildContext context) async {
+    final value = nicknameController.text.trim();
+    if (value.isEmpty) return;
+    await viewModel.saveNickname(value);
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => HomePage()));
+  }
+
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -63,12 +74,15 @@ Future<void> showNicknamePopup(
                     TextField(
                       controller: nicknameController,
                       decoration: InputDecoration(
-                        hintText: "활발한 부엉이",
+                        hintText: "태유니 엉뜨...",
                         filled: true,
                         fillColor: vrc(context).background200,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: fxc(context).brandColor!, width: 2),
+                          borderSide: BorderSide(
+                            color: fxc(context).brandColor!,
+                            width: 2,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -78,13 +92,28 @@ Future<void> showNicknamePopup(
                           ),
                         ),
                       ),
-                      onSubmitted: (value) async {
-                        await viewModel.saveNickname(value);
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (_) => HomePage()),
-                        );
-                      },
+                      onSubmitted: (_) => submitNickname(context),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: fxc(context).brandColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () => submitNickname(context),
+                        child: const Text(
+                          "확인",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

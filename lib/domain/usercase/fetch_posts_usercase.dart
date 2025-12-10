@@ -6,10 +6,15 @@ class FetchPostsUsecase {
 
   final PostRepository _postRepository;
 
-  Future<List<Post>> execute({int limit = 10, DateTime? startAfter}) async {
+  Future<List<Post>> execute({
+    int limit = 10,
+    DateTime? startAfter,
+    String? location,
+  }) async {
     return await _postRepository.fetchPosts(
       limit: limit,
       startAfter: startAfter,
+      location: location,
     );
   }
 }
