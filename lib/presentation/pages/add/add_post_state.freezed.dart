@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AddPostState {
 
- XFile? get pickedFile; VideoPlayerController? get videoController; bool get isLoading; String? get error;
+ XFile? get pickedFile; VideoPlayerController? get videoController; bool get isLoading; String? get error; String get content; String get tag;
 /// Create a copy of AddPostState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AddPostStateCopyWith<AddPostState> get copyWith => _$AddPostStateCopyWithImpl<A
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddPostState&&(identical(other.pickedFile, pickedFile) || other.pickedFile == pickedFile)&&(identical(other.videoController, videoController) || other.videoController == videoController)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddPostState&&(identical(other.pickedFile, pickedFile) || other.pickedFile == pickedFile)&&(identical(other.videoController, videoController) || other.videoController == videoController)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.content, content) || other.content == content)&&(identical(other.tag, tag) || other.tag == tag));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,pickedFile,videoController,isLoading,error);
+int get hashCode => Object.hash(runtimeType,pickedFile,videoController,isLoading,error,content,tag);
 
 @override
 String toString() {
-  return 'AddPostState(pickedFile: $pickedFile, videoController: $videoController, isLoading: $isLoading, error: $error)';
+  return 'AddPostState(pickedFile: $pickedFile, videoController: $videoController, isLoading: $isLoading, error: $error, content: $content, tag: $tag)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $AddPostStateCopyWith<$Res>  {
   factory $AddPostStateCopyWith(AddPostState value, $Res Function(AddPostState) _then) = _$AddPostStateCopyWithImpl;
 @useResult
 $Res call({
- XFile? pickedFile, VideoPlayerController? videoController, bool isLoading, String? error
+ XFile? pickedFile, VideoPlayerController? videoController, bool isLoading, String? error, String content, String tag
 });
 
 
@@ -62,13 +62,15 @@ class _$AddPostStateCopyWithImpl<$Res>
 
 /// Create a copy of AddPostState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? pickedFile = freezed,Object? videoController = freezed,Object? isLoading = null,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? pickedFile = freezed,Object? videoController = freezed,Object? isLoading = null,Object? error = freezed,Object? content = null,Object? tag = null,}) {
   return _then(_self.copyWith(
 pickedFile: freezed == pickedFile ? _self.pickedFile : pickedFile // ignore: cast_nullable_to_non_nullable
 as XFile?,videoController: freezed == videoController ? _self.videoController : videoController // ignore: cast_nullable_to_non_nullable
 as VideoPlayerController?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as String,tag: null == tag ? _self.tag : tag // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -153,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( XFile? pickedFile,  VideoPlayerController? videoController,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( XFile? pickedFile,  VideoPlayerController? videoController,  bool isLoading,  String? error,  String content,  String tag)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AddPostState() when $default != null:
-return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.error);case _:
+return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.error,_that.content,_that.tag);case _:
   return orElse();
 
 }
@@ -174,10 +176,10 @@ return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.err
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( XFile? pickedFile,  VideoPlayerController? videoController,  bool isLoading,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( XFile? pickedFile,  VideoPlayerController? videoController,  bool isLoading,  String? error,  String content,  String tag)  $default,) {final _that = this;
 switch (_that) {
 case _AddPostState():
-return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.error);case _:
+return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.error,_that.content,_that.tag);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +196,10 @@ return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.err
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( XFile? pickedFile,  VideoPlayerController? videoController,  bool isLoading,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( XFile? pickedFile,  VideoPlayerController? videoController,  bool isLoading,  String? error,  String content,  String tag)?  $default,) {final _that = this;
 switch (_that) {
 case _AddPostState() when $default != null:
-return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.error);case _:
+return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.error,_that.content,_that.tag);case _:
   return null;
 
 }
@@ -209,13 +211,15 @@ return $default(_that.pickedFile,_that.videoController,_that.isLoading,_that.err
 
 
 class _AddPostState implements AddPostState {
-  const _AddPostState({this.pickedFile, this.videoController, this.isLoading = false, this.error});
+  const _AddPostState({this.pickedFile, this.videoController, this.isLoading = false, this.error, this.content = "", this.tag = ""});
   
 
 @override final  XFile? pickedFile;
 @override final  VideoPlayerController? videoController;
 @override@JsonKey() final  bool isLoading;
 @override final  String? error;
+@override@JsonKey() final  String content;
+@override@JsonKey() final  String tag;
 
 /// Create a copy of AddPostState
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +231,16 @@ _$AddPostStateCopyWith<_AddPostState> get copyWith => __$AddPostStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddPostState&&(identical(other.pickedFile, pickedFile) || other.pickedFile == pickedFile)&&(identical(other.videoController, videoController) || other.videoController == videoController)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddPostState&&(identical(other.pickedFile, pickedFile) || other.pickedFile == pickedFile)&&(identical(other.videoController, videoController) || other.videoController == videoController)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.content, content) || other.content == content)&&(identical(other.tag, tag) || other.tag == tag));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,pickedFile,videoController,isLoading,error);
+int get hashCode => Object.hash(runtimeType,pickedFile,videoController,isLoading,error,content,tag);
 
 @override
 String toString() {
-  return 'AddPostState(pickedFile: $pickedFile, videoController: $videoController, isLoading: $isLoading, error: $error)';
+  return 'AddPostState(pickedFile: $pickedFile, videoController: $videoController, isLoading: $isLoading, error: $error, content: $content, tag: $tag)';
 }
 
 
@@ -247,7 +251,7 @@ abstract mixin class _$AddPostStateCopyWith<$Res> implements $AddPostStateCopyWi
   factory _$AddPostStateCopyWith(_AddPostState value, $Res Function(_AddPostState) _then) = __$AddPostStateCopyWithImpl;
 @override @useResult
 $Res call({
- XFile? pickedFile, VideoPlayerController? videoController, bool isLoading, String? error
+ XFile? pickedFile, VideoPlayerController? videoController, bool isLoading, String? error, String content, String tag
 });
 
 
@@ -264,13 +268,15 @@ class __$AddPostStateCopyWithImpl<$Res>
 
 /// Create a copy of AddPostState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? pickedFile = freezed,Object? videoController = freezed,Object? isLoading = null,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? pickedFile = freezed,Object? videoController = freezed,Object? isLoading = null,Object? error = freezed,Object? content = null,Object? tag = null,}) {
   return _then(_AddPostState(
 pickedFile: freezed == pickedFile ? _self.pickedFile : pickedFile // ignore: cast_nullable_to_non_nullable
 as XFile?,videoController: freezed == videoController ? _self.videoController : videoController // ignore: cast_nullable_to_non_nullable
 as VideoPlayerController?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as String,tag: null == tag ? _self.tag : tag // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

@@ -15,10 +15,30 @@ class AddPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleController = useTextEditingController();
-    final tagController = useTextEditingController();
+    final addState = ref.watch(addPostViewModelProvider);
+    // AddPage 진입 시 에러 메시지 초기화 (빌드 이후 실행)
+    useEffect(() {
+      Future.microtask(() {
+        ref.read(addPostViewModelProvider.notifier).updateContent("");
+        ref.read(addPostViewModelProvider.notifier).updateTag("");
+        ref
+            .read(addPostViewModelProvider.notifier)
+            .setError("* 이미지, 동영상, 내용은 필수입니다.");
+      });
+      return null;
+    }, []);
+
+    // 업로드 성공 시 네비게이션은 onPressed에서만 처리
+    final titleController = useTextEditingController(text: addState.content);
+    final tagController = useTextEditingController(text: addState.tag);
 
     final state = ref.watch(addPostViewModelProvider);
+
+    useEffect(() {
+      titleController.text = state.content;
+      tagController.text = state.tag;
+      return null;
+    }, [state.content, state.tag]);
     final viewModel = ref.read(addPostViewModelProvider.notifier);
     final currentUserAsync = ref.watch(currentUserProvider);
     final cachedAddressAsync = ref.watch(cachedAddressProvider);
@@ -27,7 +47,7 @@ class AddPage extends HookConsumerWidget {
       backgroundColor: vrc(context).background100,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -44,6 +64,9 @@ class AddPage extends HookConsumerWidget {
                   context: context,
                   controller: titleController,
                   hint: "내용을 입력해주세요",
+                  onChanged: (value) => ref
+                      .read(addPostViewModelProvider.notifier)
+                      .updateContent(value),
                 ),
 
                 const SizedBox(height: 15),
@@ -52,9 +75,12 @@ class AddPage extends HookConsumerWidget {
                   context: context,
                   controller: tagController,
                   hint: "태그를 입력해주세요",
+                  onChanged: (value) => ref
+                      .read(addPostViewModelProvider.notifier)
+                      .updateTag(value),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
 
                 if (state.error != null)
                   Padding(
@@ -73,7 +99,14 @@ class AddPage extends HookConsumerWidget {
                         text: "취소",
                         onPressed: () {
                           ref.read(addPostViewModelProvider.notifier).reset();
-                          Navigator.pop(context);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const HomePage(initialIndex: 0),
+                            ),
+                            (route) => false,
+                          );
                         },
                       ),
                     ),
@@ -84,7 +117,8 @@ class AddPage extends HookConsumerWidget {
                         text: state.isLoading || currentUserAsync.isLoading
                             ? "게시 중..."
                             : "게시",
-                        onPressed: state.isLoading ||
+                        onPressed:
+                            state.isLoading ||
                                 currentUserAsync.isLoading ||
                                 cachedAddressAsync.isLoading
                             ? null
@@ -114,8 +148,10 @@ class AddPage extends HookConsumerWidget {
                                   location: location,
                                 );
 
-                                if (state.error == null && context.mounted) {
-                                  // 새 게시글을 쓰면 post_list에 바로 보이게 함 크크루빙빙봉
+                                // 업로드 후 최신 상태를 다시 읽어서 체크
+                                final newState = ref.read(addPostViewModelProvider);
+                                if (newState.error == null && context.mounted) {
+                                  viewModel.reset();
                                   ref.invalidate(postListViewModelProvider);
                                   Navigator.pushReplacement(
                                     context,
@@ -130,6 +166,7 @@ class AddPage extends HookConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 15),
               ],
             ),
           ),
