@@ -4,34 +4,82 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
-
-// :흰색_확인_표시: 방금 만든 바텀시트 위젯 import
 class MyPage extends ConsumerWidget {
   const MyPage({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // :흰색_확인_표시: Home(PostList)와 같은 데이터를 그대로 사용
-    final postList = ref.watch(postListViewModelProvider) ?? [];
+    // ✅ 마이페이지가 빌드될 때마다 최신 posts 다시 불러오기
+    Future.microtask(() {
+      ref.read(myPageViewModelProvider.notifier).fetchPosts();
+    });
+
+    // 🔹 1) 전체 포스트는 MyPageViewModel에서 받아옴
+    final allPosts = ref.watch(myPageViewModelProvider);
+
+    // 🔹 2) 현재 로그인한 유저 (AddPage랑 똑같이 currentUserProvider 사용)
+    final currentUserAsync = ref.watch(currentUserProvider);
+
+    // 로딩 중일 때
+    if (currentUserAsync.isLoading) {
+      return const Scaffold(
+        body: SafeArea(
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    final currentUser = currentUserAsync.value;
+
+    // 유저 정보 없으면
+    if (currentUser == null) {
+      return const Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Text(
+              "로그인 정보를 불러오지 못했습니다.",
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 🔹 3) "내가 쓴 글"만 필터 (authorId == user.id)
+    final List<Post> postList =
+        allPosts.where((post) => post.authorId == currentUser.id).toList();
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFF4F0),
       appBar: AppBar(title: const Text("My Page"), centerTitle: true),
       body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: postList.length,
-          itemBuilder: (context, index) {
-            final post = postList[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _postItem(context, ref, post),
-            );
-          },
-        ),
+        child: postList.isEmpty
+            ? const Center(
+                child: Text(
+                  "내가 작성한 게시물이 없어요 🐹",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black38,
+                  ),
+                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: postList.length,
+                itemBuilder: (context, index) {
+                  final post = postList[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _postItem(context, ref, post),
+                  );
+                },
+              ),
       ),
     );
   }
 
-  /// :흰색_확인_표시: 게시글 카드
+  /// 게시글 카드
   Widget _postItem(BuildContext context, WidgetRef ref, Post post) {
     return Container(
       height: 160,
@@ -43,7 +91,7 @@ class MyPage extends ConsumerWidget {
       ),
       child: Stack(
         children: [
-          /// :흰색_확인_표시: 이미지
+          /// 이미지
           ClipRRect(
             borderRadius: BorderRadius.circular(18),
             child: Image.network(
@@ -56,15 +104,19 @@ class MyPage extends ConsumerWidget {
             ),
           ),
 
-          /// :흰색_확인_표시: 삭제 (Firestore + UI동기화)
+          /// 삭제 버튼 (Firestore + UI 동기화 + 홈 리스트 갱신)
           Positioned(
             top: 10,
             left: 10,
             child: GestureDetector(
-              onTap: () {
-                ref
+              onTap: () async {
+                // 1️⃣ 마이페이지쪽 ViewModel + Firestore에서 삭제
+                await ref
                     .read(myPageViewModelProvider.notifier)
                     .deletePost(post.postId);
+
+                // 2️⃣ 홈(PostListPage)에서 사용하는 리스트도 새로고침
+                ref.invalidate(postListViewModelProvider);
               },
               child: Container(
                 padding: const EdgeInsets.all(8),
@@ -77,13 +129,13 @@ class MyPage extends ConsumerWidget {
             ),
           ),
 
-          /// :흰색_확인_표시: 좋아요 + 댓글
+          /// 좋아요 + 댓글
           Positioned(
             right: 14,
             bottom: 12,
             child: Column(
               children: [
-                /// :흰색_확인_표시: 좋아요 (읽기 전용 표시)
+                // 좋아요 표시
                 Column(
                   children: [
                     Icon(
@@ -103,7 +155,7 @@ class MyPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
 
-                /// :흰색_확인_표시: 댓글 버튼 (누르면 바텀시트 열림)
+                // 댓글 버튼
                 GestureDetector(
                   onTap: () => _openCommentBottomSheet(context, post.postId),
                   child: Column(
@@ -132,7 +184,7 @@ class MyPage extends ConsumerWidget {
     );
   }
 
-  ///  댓글 바텀시트 오픈 (바깥 클릭 시 닫힘)
+  /// 댓글 바텀시트
   void _openCommentBottomSheet(BuildContext context, String postId) {
     showModalBottomSheet(
       context: context,

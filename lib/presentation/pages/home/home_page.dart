@@ -1,8 +1,10 @@
 import 'package:cute_story_closed_sns_app/presentation/pages/add/add_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/bottomnavbar/bottomnavbar.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page.dart';
+
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_page.dart';
 import 'package:flutter/material.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, this.initialIndex = 0});
