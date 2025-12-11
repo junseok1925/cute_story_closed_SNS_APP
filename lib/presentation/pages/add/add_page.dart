@@ -3,7 +3,6 @@ import 'package:cute_story_closed_sns_app/presentation/pages/home/home_page.dart
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'widgets/media_picker_box.dart';
@@ -15,21 +14,8 @@ class AddPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final addState = ref.watch(addPostViewModelProvider);
-    // AddPage 진입 시 상태를 초기화하지 않음. (게시 성공/취소 시에만 초기화)
-
-    // 업로드 성공 시 네비게이션은 onPressed에서만 처리
-    final titleController = useTextEditingController(text: addState.content);
-    final tagController = useTextEditingController(text: addState.tag);
-
-    final state = ref.watch(addPostViewModelProvider);
-
-    useEffect(() {
-      titleController.text = state.content;
-      tagController.text = state.tag;
-      return null;
-    }, [state.content, state.tag]);
     final viewModel = ref.read(addPostViewModelProvider.notifier);
+    final state = ref.watch(addPostViewModelProvider);
     final currentUserAsync = ref.watch(currentUserProvider);
     final cachedAddressAsync = ref.watch(cachedAddressProvider);
 
@@ -52,22 +38,16 @@ class AddPage extends HookConsumerWidget {
 
                 CsTextField(
                   context: context,
-                  controller: titleController,
+                  controller: viewModel.contentController,
                   hint: "내용을 입력해주세요",
-                  onChanged: (value) => ref
-                      .read(addPostViewModelProvider.notifier)
-                      .updateContent(value),
                 ),
 
                 const SizedBox(height: 15),
 
                 CsTextField(
                   context: context,
-                  controller: tagController,
+                  controller: viewModel.tagController,
                   hint: "태그를 입력해주세요",
-                  onChanged: (value) => ref
-                      .read(addPostViewModelProvider.notifier)
-                      .updateTag(value),
                 ),
 
                 const SizedBox(height: 15),
@@ -131,8 +111,8 @@ class AddPage extends HookConsumerWidget {
                                   );
                                   return;
                                 }
+
                                 await viewModel.uploadPost(
-                                  content: titleController.text,
                                   authorId: user.id,
                                   nickname: user.nickname,
                                   location: location,
