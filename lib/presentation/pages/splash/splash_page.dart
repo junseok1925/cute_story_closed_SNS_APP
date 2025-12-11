@@ -1,7 +1,10 @@
 import 'package:cute_story_closed_sns_app/core/auth/google_login_service.dart';
-import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/core/location_cache_manager.dart';
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:cute_story_closed_sns_app/data/repository/user_repository_impl.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/home/home_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/splash/popup/nickname_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -11,13 +14,39 @@ class SplashPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final showLoginButton = useState(false);
+    final isCheckingAuth = useState(true);
 
     useEffect(() {
       // 위치 권한/주소 로딩 및 스트리밍을 앱 전역 매니저에 위임
       LocationCacheManager.start();
-      Future.delayed(Duration(seconds: 2), () {
-        showLoginButton.value = true;
+
+      // 이미 로그인된 경우 프로필 확인 후 홈
+      Future.microtask(() async {
+        final authUser = await FirebaseAuth.instance.authStateChanges().first;
+        if (authUser != null) {
+          final repo = UserRepositoryImpl();
+          final profile = await repo.fetchUser(authUser.uid);
+          if (!context.mounted) return;
+          if (profile == null || profile.nickname.trim().isEmpty) {
+            await showNicknamePopup(
+              context,
+              uid: authUser.uid,
+              email: authUser.email ?? '',
+              provider: authUser.providerData.isNotEmpty
+                  ? authUser.providerData.first.providerId
+                  : 'google',
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomePage()),
+            );
+          }
+        } else {
+          showLoginButton.value = true;
+        }
+        isCheckingAuth.value = false;
       });
+
       return null;
     }, []);
 
@@ -34,7 +63,7 @@ class SplashPage extends HookWidget {
               Image.asset("assets/images/logo.webp"),
               Spacer(),
               AnimatedOpacity(
-                opacity: showLoginButton.value ? 1 : 0,
+                opacity: showLoginButton.value && !isCheckingAuth.value ? 1 : 0,
                 duration: Duration(milliseconds: 800),
                 child: Column(
                   children: [
@@ -48,12 +77,22 @@ class SplashPage extends HookWidget {
                             .signInWithGoogle();
                         final user = userCredential?.user;
                         if (user == null) return;
-                        await showNicknamePopup(
-                          context,
-                          uid: user.uid,
-                          email: user.email ?? '',
-                          provider: 'google',
-                        );
+                        final repo = UserRepositoryImpl();
+                        final profile = await repo.fetchUser(user.uid);
+                        if (!context.mounted) return;
+                        if (profile == null ||
+                            profile.nickname.trim().isEmpty) {
+                          await showNicknamePopup(
+                            context,
+                            uid: user.uid,
+                            email: user.email ?? '',
+                            provider: 'google',
+                          );
+                        } else {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                          );
+                        }
                       },
                     ),
                   ],

@@ -83,3 +83,9 @@ final commentsStreamProvider = StreamProvider.family<List<Comment>, String>((
             .toList(),
       );
 });
+
+final commentCountProvider = StreamProvider.family<int, String>((ref, postId) {
+  return ref.read(commentRepositoryProvider).commentsStream(postId).map(
+        (dtos) => dtos.length,
+      );
+});

@@ -2,10 +2,12 @@ import 'dart:ui';
 
 import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends ConsumerWidget {
   const PostCard({
     super.key,
     required this.post,
@@ -22,12 +24,12 @@ class PostCard extends StatelessWidget {
   final String Function(DateTime) formatTime;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Stack(
       fit: StackFit.expand,
       children: [
         _buildBackground(context),
-        _buildOverlay(context),
+        _buildOverlay(context, ref),
       ],
     );
   }
@@ -63,7 +65,7 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildOverlay(BuildContext context) {
+  Widget _buildOverlay(BuildContext context, WidgetRef ref) {
     return Positioned(
       left: 0,
       right: 0,
@@ -92,7 +94,7 @@ class PostCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildMetaRow(context),
+                  _buildMetaRow(context, ref),
                   const SizedBox(height: 10),
                   _buildAuthor(context),
                   const SizedBox(height: 6),
@@ -107,7 +109,8 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetaRow(BuildContext context) {
+  Widget _buildMetaRow(BuildContext context, WidgetRef ref) {
+    final commentCountAsync = ref.watch(commentCountProvider(post.postId));
     return Row(
       children: [
         Text(
@@ -148,7 +151,10 @@ class PostCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                post.commentCount.toString(),
+                commentCountAsync.maybeWhen(
+                  data: (count) => count.toString(),
+                  orElse: () => post.commentCount.toString(),
+                ),
                 style: TextStyle(color: vrc(context).textColor200),
               ),
             ],
