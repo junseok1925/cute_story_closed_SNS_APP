@@ -27,10 +27,7 @@ class PostCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Stack(
       fit: StackFit.expand,
-      children: [
-        _buildBackground(context),
-        _buildOverlay(context, ref),
-      ],
+      children: [_buildBackground(context), _buildOverlay(context, ref)],
     );
   }
 
@@ -115,10 +112,7 @@ class PostCard extends ConsumerWidget {
       children: [
         Text(
           formatTime(post.createdAt),
-          style: TextStyle(
-            fontSize: 12,
-            color: vrc(context).textColor200,
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.white),
         ),
         const Spacer(),
         GestureDetector(
@@ -128,13 +122,12 @@ class PostCard extends ConsumerWidget {
               Icon(
                 post.likedByMe ? Icons.favorite : Icons.favorite_border,
                 size: 28,
-                color:
-                    post.likedByMe ? fxc(context).brandColor : vrc(context).textColor200,
+                color: post.likedByMe ? fxc(context).brandColor : Colors.white,
               ),
               const SizedBox(width: 4),
               Text(
                 post.likeCount.toString(),
-                style: TextStyle(color: vrc(context).textColor200),
+                style: TextStyle(color: Colors.white),
               ),
             ],
           ),
@@ -144,18 +137,14 @@ class PostCard extends ConsumerWidget {
           onTap: onShowComments,
           child: Row(
             children: [
-              Icon(
-                Icons.comment,
-                size: 28,
-                color: vrc(context).textColor200,
-              ),
+              Icon(Icons.comment, size: 28, color: Colors.white),
               const SizedBox(width: 4),
               Text(
                 commentCountAsync.maybeWhen(
                   data: (count) => count.toString(),
                   orElse: () => post.commentCount.toString(),
                 ),
-                style: TextStyle(color: vrc(context).textColor200),
+                style: TextStyle(color: Colors.white),
               ),
             ],
           ),
@@ -170,7 +159,7 @@ class PostCard extends ConsumerWidget {
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 17,
-        color: vrc(context).textColor200,
+        color: Colors.white,
       ),
     );
   }
@@ -178,10 +167,7 @@ class PostCard extends ConsumerWidget {
   Widget _buildContent(BuildContext context) {
     return Text(
       post.content,
-      style: TextStyle(
-        fontSize: 15,
-        color: vrc(context).textColor200,
-      ),
+      style: TextStyle(fontSize: 15, color: Colors.white),
     );
   }
 
@@ -193,19 +179,12 @@ class PostCard extends ConsumerWidget {
       padding: const EdgeInsets.only(top: 6),
       child: Row(
         children: [
-          Icon(
-            Icons.location_on,
-            size: 16,
-            color: vrc(context).textColor100,
-          ),
+          Icon(Icons.location_on, size: 16, color: vrc(context).textColor100),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
               post.location!,
-              style: TextStyle(
-                fontSize: 12,
-                color: vrc(context).textColor100,
-              ),
+              style: TextStyle(fontSize: 12, color: vrc(context).textColor100),
               overflow: TextOverflow.ellipsis,
             ),
           ),
