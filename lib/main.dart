@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'Cute Story SNS',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       home: HomePage(),
     );
   }
