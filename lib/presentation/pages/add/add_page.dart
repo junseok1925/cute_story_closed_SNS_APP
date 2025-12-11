@@ -16,17 +16,7 @@ class AddPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final addState = ref.watch(addPostViewModelProvider);
-    // AddPage 진입 시 에러 메시지 초기화 (빌드 이후 실행)
-    useEffect(() {
-      Future.microtask(() {
-        ref.read(addPostViewModelProvider.notifier).updateContent("");
-        ref.read(addPostViewModelProvider.notifier).updateTag("");
-        ref
-            .read(addPostViewModelProvider.notifier)
-            .setError("* 이미지, 동영상, 내용은 필수입니다.");
-      });
-      return null;
-    }, []);
+    // AddPage 진입 시 상태를 초기화하지 않음. (게시 성공/취소 시에만 초기화)
 
     // 업로드 성공 시 네비게이션은 onPressed에서만 처리
     final titleController = useTextEditingController(text: addState.content);
@@ -149,7 +139,9 @@ class AddPage extends HookConsumerWidget {
                                 );
 
                                 // 업로드 후 최신 상태를 다시 읽어서 체크
-                                final newState = ref.read(addPostViewModelProvider);
+                                final newState = ref.read(
+                                  addPostViewModelProvider,
+                                );
                                 if (newState.error == null && context.mounted) {
                                   viewModel.reset();
                                   ref.invalidate(postListViewModelProvider);
