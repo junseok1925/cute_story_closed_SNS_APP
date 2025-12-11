@@ -1,9 +1,12 @@
-import 'package:cute_story_closed_sns_app/presentation/pages/my_page/my_page_bottom_sheet.dart';
+import 'dart:ui';
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
+
 class MyPage extends ConsumerWidget {
   const MyPage({super.key});
 
@@ -23,9 +26,7 @@ class MyPage extends ConsumerWidget {
     // 로딩 중일 때
     if (currentUserAsync.isLoading) {
       return const Scaffold(
-        body: SafeArea(
-          child: Center(child: CircularProgressIndicator()),
-        ),
+        body: SafeArea(child: Center(child: CircularProgressIndicator())),
       );
     }
 
@@ -36,31 +37,33 @@ class MyPage extends ConsumerWidget {
       return const Scaffold(
         body: SafeArea(
           child: Center(
-            child: Text(
-              "로그인 정보를 불러오지 못했습니다.",
-              style: TextStyle(fontSize: 16),
-            ),
+            child: Text("로그인 정보를 불러오지 못했습니다.", style: TextStyle(fontSize: 16)),
           ),
         ),
       );
     }
 
     // 🔹 3) "내가 쓴 글"만 필터 (authorId == user.id)
-    final List<Post> postList =
-        allPosts.where((post) => post.authorId == currentUser.id).toList();
+    final List<Post> postList = allPosts
+        .where((post) => post.authorId == currentUser.id)
+        .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF4F0),
-      appBar: AppBar(title: const Text("My Page"), centerTitle: true),
+      backgroundColor: vrc(context).background100,
+      appBar: AppBar(
+        title: const Text("My Page"),
+        centerTitle: true,
+        backgroundColor: vrc(context).background100,
+      ),
       body: SafeArea(
         child: postList.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
                   "내가 작성한 게시물이 없어요 🐹",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black38,
+                    color: vrc(context).textColor100,
                   ),
                 ),
               )
@@ -83,12 +86,7 @@ class MyPage extends ConsumerWidget {
   Widget _postItem(BuildContext context, WidgetRef ref, Post post) {
     return Container(
       height: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(blurRadius: 6, color: Colors.black.withOpacity(0.1)),
-        ],
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(18)),
       child: Stack(
         children: [
           /// 이미지
@@ -121,10 +119,14 @@ class MyPage extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: vrc(context).background200!.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.delete, color: Colors.red, size: 20),
+                child: Icon(
+                  Icons.delete,
+                  color: fxc(context).brandColor,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -140,14 +142,16 @@ class MyPage extends ConsumerWidget {
                   children: [
                     Icon(
                       post.likedByMe ? Icons.favorite : Icons.favorite_border,
-                      color: post.likedByMe ? Colors.red : Colors.white,
+                      color: post.likedByMe
+                          ? Colors.red
+                          : vrc(context).textColor200,
                       size: 26,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       post.likeCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: vrc(context).textColor200,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -160,16 +164,16 @@ class MyPage extends ConsumerWidget {
                   onTap: () => _openCommentBottomSheet(context, post.postId),
                   child: Column(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.chat_bubble_outline,
-                        color: Colors.white,
+                        color: vrc(context).textColor200,
                         size: 24,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         post.commentCount.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: vrc(context).textColor200,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -183,18 +187,58 @@ class MyPage extends ConsumerWidget {
       ),
     );
   }
-
+// _openCommentBottomSheet
   /// 댓글 바텀시트
   void _openCommentBottomSheet(BuildContext context, String postId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: true,
-      enableDrag: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black54,
+      barrierColor: Colors.black54, // 주변 dim만 유지
       builder: (_) {
-        return MyPageBottomSheet(postId: postId);
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.pop(context), // 배경 탭 → 닫기
+          child: Stack(
+            children: [
+              Positioned.fill(child: Container()),
+
+              // ▼ ▼ 블러 + 투명 바텀시트 ▼ ▼
+              DraggableScrollableSheet(
+                initialChildSize: 0.65,
+                minChildSize: 0.5,
+                maxChildSize: 0.9,
+                builder: (_, scrollController) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {}, // 시트 내부는 닫히지 않음
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(18),
+                      ),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: vrc(
+                              context,
+                            ).background200!.withValues(alpha: 0.7),
+                            // → 30% 투명 + 블러
+                          ),
+                          child: CommentsPage(
+                            postId: postId,
+                            scrollController: scrollController,
+                            onClose: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
       },
     );
   }
