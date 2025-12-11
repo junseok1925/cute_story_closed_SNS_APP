@@ -92,9 +92,7 @@ class PostCard extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildMetaRow(context, ref),
-                  const SizedBox(height: 10),
                   _buildAuthor(context),
-                  const SizedBox(height: 6),
                   _buildContent(context),
                   _buildLocation(context),
                 ],
@@ -167,7 +165,7 @@ class PostCard extends ConsumerWidget {
   Widget _buildContent(BuildContext context) {
     return Text(
       post.content,
-      style: TextStyle(fontSize: 15, color: Colors.white),
+      style: TextStyle(fontSize: 14, color: Colors.white),
     );
   }
 
@@ -176,15 +174,15 @@ class PostCard extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     return Padding(
-      padding: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.only(top: 20),
       child: Row(
         children: [
-          Icon(Icons.location_on, size: 16, color: vrc(context).textColor100),
+          Icon(Icons.location_on, size: 16, color: Colors.white70),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
               post.location!,
-              style: TextStyle(fontSize: 12, color: vrc(context).textColor100),
+              style: TextStyle(fontSize: 12, color: Colors.white70),
               overflow: TextOverflow.ellipsis,
             ),
           ),

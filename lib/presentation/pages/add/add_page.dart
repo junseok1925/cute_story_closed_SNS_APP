@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'widgets/media_picker_box.dart';
 import 'widgets/cs_text_field.dart';
 import 'widgets/cs_button.dart';
+import '../post_list/widgets/location_header.dart';
 
 class AddPage extends HookConsumerWidget {
   const AddPage({super.key});
@@ -20,128 +21,140 @@ class AddPage extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: vrc(context).background100,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                MediaPickerBox(
-                  pickedFile: state.pickedFile,
-                  controller: state.videoController,
-                  onTapImage: () => viewModel.pickImage(),
-                  onLongPressVideo: () => viewModel.pickVideo(),
-                ),
-
-                const SizedBox(height: 15),
-
-                CsTextField(
-                  context: context,
-                  controller: viewModel.contentController,
-                  hint: "내용을 입력해주세요",
-                ),
-
-                const SizedBox(height: 15),
-
-                CsTextField(
-                  context: context,
-                  controller: viewModel.tagController,
-                  hint: "태그를 입력해주세요",
-                ),
-
-                const SizedBox(height: 15),
-
-                if (state.error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      state.error!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ),
-
-                Row(
+      body: Column(
+        children: [
+          LocationHeader(addressAsync: cachedAddressAsync),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+              child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: CsButton(
-                        context: context,
-                        text: "취소",
-                        onPressed: () {
-                          ref.read(addPostViewModelProvider.notifier).reset();
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const HomePage(initialIndex: 0),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                      ),
+                    MediaPickerBox(
+                      pickedFile: state.pickedFile,
+                      controller: state.videoController,
+                      onTapImage: () => viewModel.pickImage(),
+                      onLongPressVideo: () => viewModel.pickVideo(),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: CsButton(
-                        context: context,
-                        text: state.isLoading || currentUserAsync.isLoading
-                            ? "게시 중..."
-                            : "게시",
-                        onPressed:
-                            state.isLoading ||
-                                currentUserAsync.isLoading ||
-                                cachedAddressAsync.isLoading
-                            ? null
-                            : () async {
-                                final user = currentUserAsync.value;
-                                if (user == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("로그인 정보를 불러오지 못했습니다."),
-                                    ),
-                                  );
-                                  return;
-                                }
-                                final location = cachedAddressAsync.value;
-                                if (location == null || location.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("위치 정보를 불러오지 못했습니다."),
-                                    ),
-                                  );
-                                  return;
-                                }
 
-                                await viewModel.uploadPost(
-                                  authorId: user.id,
-                                  nickname: user.nickname,
-                                  location: location,
-                                );
+                    const SizedBox(height: 15),
 
-                                // 업로드 후 최신 상태를 다시 읽어서 체크
-                                final newState = ref.read(
-                                  addPostViewModelProvider,
-                                );
-                                if (newState.error == null && context.mounted) {
-                                  viewModel.reset();
-                                  ref.invalidate(postListViewModelProvider);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const HomePage(initialIndex: 0),
-                                    ),
-                                  );
-                                }
-                              },
-                      ),
+                    CsTextField(
+                      context: context,
+                      controller: viewModel.contentController,
+                      hint: "내용을 입력해주세요",
                     ),
+
+                    const SizedBox(height: 15),
+
+                    CsTextField(
+                      context: context,
+                      controller: viewModel.tagController,
+                      hint: "태그를 입력해주세요",
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    if (state.error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          state.error!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CsButton(
+                            context: context,
+                            text: "취소",
+                            onPressed: () {
+                              ref
+                                  .read(addPostViewModelProvider.notifier)
+                                  .reset();
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const HomePage(initialIndex: 0),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CsButton(
+                            context: context,
+                            text: state.isLoading || currentUserAsync.isLoading
+                                ? "게시 중..."
+                                : "게시",
+                            onPressed:
+                                state.isLoading ||
+                                    currentUserAsync.isLoading ||
+                                    cachedAddressAsync.isLoading
+                                ? null
+                                : () async {
+                                    final user = currentUserAsync.value;
+                                    if (user == null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("로그인 정보를 불러오지 못했습니다."),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    final location = cachedAddressAsync.value;
+                                    if (location == null || location.isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("위치 정보를 불러오지 못했습니다."),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    await viewModel.uploadPost(
+                                      authorId: user.id,
+                                      nickname: user.nickname,
+                                      location: location,
+                                    );
+
+                                    // 업로드 후 최신 상태를 다시 읽어서 체크
+                                    final newState = ref.read(
+                                      addPostViewModelProvider,
+                                    );
+                                    if (newState.error == null &&
+                                        context.mounted) {
+                                      viewModel.reset();
+                                      ref.invalidate(postListViewModelProvider);
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomePage(initialIndex: 0),
+                                        ),
+                                      );
+                                    }
+                                  },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
                   ],
                 ),
-                const SizedBox(height: 15),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

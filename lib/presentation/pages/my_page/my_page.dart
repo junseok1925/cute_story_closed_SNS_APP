@@ -140,19 +140,38 @@ class MyPage extends ConsumerWidget {
                 // 좋아요 표시
                 Column(
                   children: [
-                    Icon(
-                      post.likedByMe ? Icons.favorite : Icons.favorite_border,
-                      color: post.likedByMe
-                          ? Colors.red
-                          : vrc(context).textColor200,
-                      size: 26,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      post.likeCount.toString(),
-                      style: TextStyle(
-                        color: vrc(context).textColor200,
-                        fontWeight: FontWeight.bold,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                        child: Container(
+                          color: Colors.black.withOpacity(0.3),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 5,
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                post.likedByMe
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: post.likedByMe
+                                    ? Colors.red
+                                    : Colors.white,
+                                size: 26,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                post.likeCount.toString(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -162,22 +181,35 @@ class MyPage extends ConsumerWidget {
                 // 댓글 버튼
                 GestureDetector(
                   onTap: () => _openCommentBottomSheet(context, post.postId),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.chat_bubble_outline,
-                        color: vrc(context).textColor200,
-                        size: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        post.commentCount.toString(),
-                        style: TextStyle(
-                          color: vrc(context).textColor200,
-                          fontWeight: FontWeight.bold,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.3),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 5,
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              post.commentCount.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -187,7 +219,8 @@ class MyPage extends ConsumerWidget {
       ),
     );
   }
-// _openCommentBottomSheet
+
+  // _openCommentBottomSheet
   /// 댓글 바텀시트
   void _openCommentBottomSheet(BuildContext context, String postId) {
     showModalBottomSheet(
