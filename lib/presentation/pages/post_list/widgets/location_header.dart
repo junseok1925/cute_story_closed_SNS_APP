@@ -8,17 +8,16 @@ class LocationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final iconColor = isDark ? Colors.white70 : Colors.black54;
     return SafeArea(
       bottom: false,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
-            const Icon(
-              Icons.location_on,
-              size: 18,
-              color: Colors.white70,
-            ),
+            Icon(Icons.location_on, size: 18, color: iconColor),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
@@ -27,8 +26,8 @@ class LocationHeader extends StatelessWidget {
                   loading: () => '주소 불러오는 중...',
                   error: (err, stack) => '주소 불러오기 실패',
                 ),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
