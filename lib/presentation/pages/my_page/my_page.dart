@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_view_model.dart';
 
 class MyPage extends ConsumerWidget {
   const MyPage({super.key});
@@ -160,25 +161,37 @@ class MyPage extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 // 댓글 버튼
-                GestureDetector(
-                  onTap: () => _openCommentBottomSheet(context, post.postId),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.chat_bubble_outline,
-                        color: vrc(context).textColor200,
-                        size: 24,
+                Consumer(
+                  builder: (context, ref, _) {
+                    final commentCountAsync = ref.watch(
+                      commentCountProvider(post.postId),
+                    );
+                    final count = commentCountAsync.maybeWhen(
+                      data: (c) => c,
+                      orElse: () => post.commentCount,
+                    );
+                    return GestureDetector(
+                      onTap: () =>
+                          _openCommentBottomSheet(context, post.postId),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.comment,
+                            color: vrc(context).textColor200,
+                            size: 24,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            count.toString(),
+                            style: TextStyle(
+                              color: vrc(context).textColor200,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        post.commentCount.toString(),
-                        style: TextStyle(
-                          color: vrc(context).textColor200,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -187,7 +200,8 @@ class MyPage extends ConsumerWidget {
       ),
     );
   }
-// _openCommentBottomSheet
+
+  // _openCommentBottomSheet
   /// 댓글 바텀시트
   void _openCommentBottomSheet(BuildContext context, String postId) {
     showModalBottomSheet(
