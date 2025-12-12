@@ -1,5 +1,12 @@
+import 'dart:ui';
+
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_page.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/post_list/widgets/location_header.dart';
+import 'package:cute_story_closed_sns_app/presentation/pages/post_list/widgets/post_list_view.dart';
+import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,8 +16,16 @@ class PostListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final posts = ref.watch(postListViewModelProvider);
+    final cachedAddressAsync = ref.watch(cachedAddressProvider);
 
-    return Scaffold(body: _buildFullPagePosts(context, ref, posts));
+    return Scaffold(
+      body: Column(
+        children: [
+          LocationHeader(addressAsync: cachedAddressAsync),
+          Expanded(child: _buildFullPagePosts(context, ref, posts)),
+        ],
+      ),
+    );
   }
 
   String formatTime(DateTime dt) {
@@ -28,140 +43,66 @@ class PostListPage extends ConsumerWidget {
     WidgetRef ref,
     List<Post>? posts,
   ) {
-    if (posts == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (posts.isEmpty) {
-      return const Center(child: Text('게시물이 없습니다.'));
-    }
+    return PostListView(
+      posts: posts,
+      formatTime: formatTime,
+      onRefresh: () =>
+          ref.read(postListViewModelProvider.notifier).fetchPosts(),
+      onToggleLike: (post) =>
+          ref.read(postListViewModelProvider.notifier).toggleLike(post),
+      onShowComments: (postId) => _showCommentsBottomSheet(context, postId),
+    );
+  }
 
-    final screenHeight = MediaQuery.of(context).size.height;
+  void _showCommentsBottomSheet(BuildContext context, String postId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black54, // 주변 dim만 유지
+      builder: (_) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.pop(context), // 배경 탭 → 닫기
+          child: Stack(
+            children: [
+              Positioned.fill(child: Container()),
 
-    return PageView.builder(
-      scrollDirection: Axis.vertical,
-      pageSnapping: true,
-      itemCount: posts.length,
-      itemBuilder: (context, index) {
-        final post = posts[index];
-
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            /// 배경 이미지
-            Positioned.fill(
-              child: Image.network(post.mediaUrl, fit: BoxFit.cover),
-            ),
-
-            /// ⬆⬇ 하단 오버레이 UI
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
-                constraints: BoxConstraints(minHeight: screenHeight * 0.2),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black87],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    /// 날짜 + 좋아요 + 댓글 Row
-                    Row(
-                      children: [
-                        Text(
-                          formatTime(post.createdAt),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white70,
+              // ▼ ▼ 블러 + 투명 바텀시트 ▼ ▼
+              DraggableScrollableSheet(
+                initialChildSize: 0.65,
+                minChildSize: 0.5,
+                maxChildSize: 0.9,
+                builder: (_, scrollController) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {}, // 시트 내부는 닫히지 않음
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(18),
+                      ),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: vrc(
+                              context,
+                            ).background200!.withValues(alpha: 0.7),
+                            // → 30% 투명 + 블러
+                          ),
+                          child: CommentsPage(
+                            postId: postId,
+                            scrollController: scrollController,
+                            onClose: () => Navigator.pop(context),
                           ),
                         ),
-                        const Spacer(),
-
-                        /// 좋아요 버튼
-                        GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(postListViewModelProvider.notifier)
-                                .toggleLike(
-                                  post,
-                                  userId: "testUser1",
-                                  nickname: "강준석",
-                                );
-                          },
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.favorite,
-                                size: 28,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                post.likeCount.toString(),
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(width: 16),
-
-                        /// 댓글 버튼
-                        GestureDetector(
-                          onTap: () {
-                            print("댓글 페이지로 이동 예정: ${post.postId}");
-                            // Navigator.push(context, MaterialPageRoute(
-                            //   builder: (_) => CommentPage(postId: post.postId),
-                            // ));
-                          },
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.comment,
-                                size: 28,
-                                color: Colors.white70,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                post.commentCount.toString(),
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    /// 닉네임
-                    Text(
-                      post.nickname,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                        color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 6),
-
-                    /// 게시글 내용
-                    Text(
-                      post.content,
-                      style: const TextStyle(fontSize: 15, color: Colors.white),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

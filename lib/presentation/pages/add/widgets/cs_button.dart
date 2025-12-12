@@ -16,11 +16,11 @@ class CsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 60,
+      height: 44,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: vrc(context).brand,
+          backgroundColor: fxc(context).brandColor,
           foregroundColor: vrc(context).background200,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -28,10 +28,7 @@ class CsButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
       ),
     );

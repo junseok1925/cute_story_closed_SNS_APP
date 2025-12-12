@@ -6,13 +6,37 @@ import 'package:cute_story_closed_sns_app/presentation/pages/add/add_post_state.
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/material.dart';
 
 class AddPostViewModel extends StateNotifier<AddPostState> {
-  AddPostViewModel(this._uploadPost, this._uploadFile) : super(const AddPostState());
+  final TextEditingController contentController = TextEditingController();
+  final TextEditingController tagController = TextEditingController();
+  void setError(String error) {
+    state = state.copyWith(error: error);
+  }
+
+  // 텍스트필드 값 변경 핸들러
+  void updateContent(String value) {
+    state = state.copyWith(content: value);
+  }
+
+  void updateTag(String value) {
+    state = state.copyWith(tag: value);
+  }
+
+  AddPostViewModel(this._uploadPost, this._uploadFile)
+    : super(const AddPostState());
 
   final UploadPostUseCase _uploadPost;
   final UploadFileUseCase _uploadFile;
   final picker = ImagePicker();
+
+  void reset() {
+    state.videoController?.dispose();
+    contentController.clear();
+    tagController.clear();
+    state = const AddPostState();
+  }
 
   // 이미지 선택
   Future<void> pickImage() async {
@@ -21,10 +45,7 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
 
     state.videoController?.dispose();
 
-    state = state.copyWith(
-      pickedFile: file,
-      videoController: null,
-    );
+    state = state.copyWith(pickedFile: file, videoController: null);
   }
 
   // 비디오 선택
@@ -37,20 +58,23 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
     controller.setLooping(true);
     controller.play();
 
-    state = state.copyWith(
-      pickedFile: file,
-      videoController: controller,
-    );
+    state = state.copyWith(pickedFile: file, videoController: controller);
   }
 
   // 업로드
   Future<void> uploadPost({
-    required String content,
     required String authorId,
     required String nickname,
+    required String location,
   }) async {
+    final content = contentController.text;
     if (state.pickedFile == null) {
       state = state.copyWith(error: "이미지 또는 동영상을 선택해주세요");
+      return;
+    }
+
+    if (content.trim().isEmpty) {
+      state = state.copyWith(error: "내용을 입력해주세요");
       return;
     }
 
@@ -73,6 +97,7 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
         createdAt: DateTime.now(),
         authorId: authorId,
         nickname: nickname,
+        location: location,
         likeCount: 0,
         commentCount: 0,
       );
@@ -80,10 +105,15 @@ class AddPostViewModel extends StateNotifier<AddPostState> {
       // 3) Firestore 업로드
       await _uploadPost(post);
 
-      state = state.copyWith(isLoading: false);
-
+      // 성공 후 상태를 완전히 초기화 (에러 메시지 없이)
+      state.videoController?.dispose();
+      contentController.clear();
+      tagController.clear();
+      state = const AddPostState();
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 }
+
+//rnldudns wnstjrdlgudsla

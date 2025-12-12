@@ -5,7 +5,11 @@ import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 /// (Firebase, REST API 등 실제 데이터 출처는 DataLayer에서 구현)
 abstract interface class PostRepository {
   /// 최신순 게시물 목록 조회 (무한스크롤 대비 limit & startAfter)
-  Future<List<Post>> fetchPosts({int limit, DateTime? startAfter});
+  Future<List<Post>> fetchPosts({
+    int limit,
+    DateTime? startAfter,
+    String? location,
+  });
 
   /// 특정 게시물 단일 조회
   Future<Post?> fetchPostById(String postId);
@@ -18,4 +22,24 @@ abstract interface class PostRepository {
 
   /// 게시물 삭제
   Future<void> deletePost(String postId);
+
+  /// 좋아요 여부 조회
+  Future<bool> isLiked({
+    required String postId,
+    required String userId,
+  });
+
+  /// 좋아요 추가
+  Future<void> addLike({
+    required String postId,
+    required String userId,
+    required String nickname,
+    required DateTime createdAt,
+  });
+
+  /// 좋아요 취소
+  Future<void> removeLike({
+    required String postId,
+    required String userId,
+  });
 }

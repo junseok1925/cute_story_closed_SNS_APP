@@ -11,5 +11,7 @@ abstract class AddPostState with _$AddPostState {
     VideoPlayerController? videoController,
     @Default(false) bool isLoading,
     String? error,
+    @Default("") String content,
+    @Default("") String tag,
   }) = _AddPostState;
 }

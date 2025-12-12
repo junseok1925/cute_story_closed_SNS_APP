@@ -10,11 +10,16 @@ class PostRepositoryImpl implements PostRepository {
   final PostDataSource _postDataSource;
 
   @override
-  Future<List<Post>> fetchPosts({int limit = 10, DateTime? startAfter}) async {
+  Future<List<Post>> fetchPosts({
+    int limit = 10,
+    DateTime? startAfter,
+    String? location,
+  }) async {
     // DataSource에서 받아온 것은 PostDto 리스트
     final dtoList = await _postDataSource.fetchPosts(
       limit: limit,
       startAfter: startAfter,
+      location: location,
     );
 
     // DTO → Entity 변환
@@ -27,9 +32,11 @@ class PostRepositoryImpl implements PostRepository {
             mediaUrl: dto.mediaUrl,
             mediaType: dto.mediaType,
             content: dto.content,
+            location: dto.location,
             likeCount: dto.likeCount,
             commentCount: dto.commentCount,
             createdAt: dto.createdAt.toDate(),
+            likedByMe: false,
           ),
         )
         .toList();
@@ -48,9 +55,11 @@ class PostRepositoryImpl implements PostRepository {
       mediaUrl: dto.mediaUrl,
       mediaType: dto.mediaType,
       content: dto.content,
+      location: dto.location,
       likeCount: dto.likeCount,
       commentCount: dto.commentCount,
       createdAt: dto.createdAt.toDate(),
+      likedByMe: false,
     );
   }
 
@@ -63,6 +72,7 @@ class PostRepositoryImpl implements PostRepository {
       mediaUrl: post.mediaUrl,
       mediaType: post.mediaType,
       content: post.content,
+      location: post.location,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
       createdAt: Timestamp.fromDate(post.createdAt),
@@ -80,6 +90,7 @@ class PostRepositoryImpl implements PostRepository {
       mediaUrl: post.mediaUrl,
       mediaType: post.mediaType,
       content: post.content,
+      location: post.location,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
       createdAt: Timestamp.fromDate(post.createdAt),
@@ -91,5 +102,36 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<void> deletePost(String postId) async {
     await _postDataSource.deletePost(postId);
+  }
+
+  @override
+  Future<bool> isLiked({
+    required String postId,
+    required String userId,
+  }) {
+    return _postDataSource.isLiked(postId: postId, userId: userId);
+  }
+
+  @override
+  Future<void> addLike({
+    required String postId,
+    required String userId,
+    required String nickname,
+    required DateTime createdAt,
+  }) {
+    return _postDataSource.addLike(
+      postId: postId,
+      userId: userId,
+      nickname: nickname,
+      createdAt: createdAt,
+    );
+  }
+
+  @override
+  Future<void> removeLike({
+    required String postId,
+    required String userId,
+  }) {
+    return _postDataSource.removeLike(postId: postId, userId: userId);
   }
 }

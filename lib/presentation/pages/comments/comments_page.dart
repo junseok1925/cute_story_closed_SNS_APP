@@ -1,3 +1,4 @@
+import 'package:cute_story_closed_sns_app/core/theme/app_theme.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/comments/comment_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +8,14 @@ import 'package:cute_story_closed_sns_app/presentation/pages/comments/comment_di
 class CommentsPage extends ConsumerStatefulWidget {
   final String postId;
   final VoidCallback? onClose;
-  const CommentsPage({Key? key, required this.postId, this.onClose})
-    : super(key: key);
+  final ScrollController scrollController;
+
+  const CommentsPage({
+    Key? key,
+    required this.postId,
+    this.onClose,
+    required this.scrollController,
+  }) : super(key: key);
 
   @override
   ConsumerState<CommentsPage> createState() => _CommentsPageState();
@@ -24,7 +31,9 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
     final isLoading = viewModel.isLoading;
     return Container(
       height: 400,
-      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
+      decoration: BoxDecoration(
+        color: vrc(context).background100!.withValues(alpha: 0.1),
+      ),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
@@ -48,7 +57,14 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
                     loading: () => Center(child: CircularProgressIndicator()),
                     error: (e, _) => Center(child: Text('댓글을 불러올 수 없습니다.')),
                     data: (comments) => comments.isEmpty
-                        ? Center(child: Text('댓글이 없습니다.'))
+                        ? Center(
+                            child: Text(
+                              '댓글이 없습니다.',
+                              style: TextStyle(
+                                color: vrc(context).textColor100,
+                              ),
+                            ),
+                          )
                         : ListView.builder(
                             padding: EdgeInsets.all(16),
                             itemCount: comments.length,
@@ -88,21 +104,26 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
               right: 0,
               bottom: 0,
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.only(left: 8, right: 8, bottom: 24),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: _controller,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white),
+                        cursorColor: vrc(context).textColor100,
+                        style: TextStyle(color: vrc(context).textColor100),
                         decoration: InputDecoration(
                           hintText: '  댓글을 입력해 보세요.',
-                          hintStyle: TextStyle(color: Colors.white54),
-                          prefixIcon: Icon(Icons.comment, color: Colors.white),
+                          hintStyle: TextStyle(
+                            color: vrc(context).textColor100,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.comment,
+                            color: vrc(context).textColor100,
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.white54,
+                              color: vrc(context).textColor100!,
                               width: 1,
                             ),
                           ),
@@ -120,7 +141,10 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
                     isLoading
                         ? CircularProgressIndicator()
                         : IconButton(
-                            icon: Icon(Icons.send, color: Colors.white),
+                            icon: Icon(
+                              Icons.send,
+                              color: vrc(context).textColor100,
+                            ),
                             onPressed: () async {
                               final text = _controller.text.trim();
                               if (text.isEmpty || isLoading) return;
