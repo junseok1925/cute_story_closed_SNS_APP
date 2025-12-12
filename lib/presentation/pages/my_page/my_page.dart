@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cute_story_closed_sns_app/domain/entity/post.dart';
 import 'package:cute_story_closed_sns_app/presentation/providers.dart';
 import 'package:cute_story_closed_sns_app/presentation/pages/post_list/post_list_view_model.dart';
-import 'package:cute_story_closed_sns_app/presentation/pages/comments/comments_view_model.dart';
 
 class MyPage extends ConsumerWidget {
   const MyPage({super.key});
@@ -141,19 +140,38 @@ class MyPage extends ConsumerWidget {
                 // 좋아요 표시
                 Column(
                   children: [
-                    Icon(
-                      post.likedByMe ? Icons.favorite : Icons.favorite_border,
-                      color: post.likedByMe
-                          ? Colors.red
-                          : vrc(context).textColor200,
-                      size: 26,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      post.likeCount.toString(),
-                      style: TextStyle(
-                        color: vrc(context).textColor200,
-                        fontWeight: FontWeight.bold,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                        child: Container(
+                          color: Colors.black.withOpacity(0.3),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 5,
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                post.likedByMe
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: post.likedByMe
+                                    ? Colors.red
+                                    : Colors.white,
+                                size: 26,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                post.likeCount.toString(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -161,37 +179,38 @@ class MyPage extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 // 댓글 버튼
-                Consumer(
-                  builder: (context, ref, _) {
-                    final commentCountAsync = ref.watch(
-                      commentCountProvider(post.postId),
-                    );
-                    final count = commentCountAsync.maybeWhen(
-                      data: (c) => c,
-                      orElse: () => post.commentCount,
-                    );
-                    return GestureDetector(
-                      onTap: () =>
-                          _openCommentBottomSheet(context, post.postId),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.comment,
-                            color: vrc(context).textColor200,
-                            size: 24,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            count.toString(),
-                            style: TextStyle(
-                              color: vrc(context).textColor200,
-                              fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () => _openCommentBottomSheet(context, post.postId),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.3),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 5,
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              color: Colors.white,
+                              size: 24,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              post.commentCount.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ],
             ),

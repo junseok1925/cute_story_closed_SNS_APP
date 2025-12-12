@@ -7,11 +7,17 @@ class AppTheme {
   static ThemeData light = ThemeData(
     brightness: Brightness.light,
     extensions: const [VariableColors.light, FixedColors.constant],
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: Colors.black,
+    ),
   );
 
   static ThemeData dark = ThemeData(
     brightness: Brightness.dark,
     extensions: const [VariableColors.dark, FixedColors.constant],
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: Colors.white,
+    ),
   );
 }
 

@@ -31,7 +31,9 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
     final isLoading = viewModel.isLoading;
     return Container(
       height: 400,
-      decoration: BoxDecoration(color: vrc(context).background100!.withValues(alpha: 0.1)),
+      decoration: BoxDecoration(
+        color: vrc(context).background100!.withValues(alpha: 0.1),
+      ),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
@@ -102,7 +104,7 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
               right: 0,
               bottom: 0,
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.only(left: 8, right: 8, bottom: 24),
                 child: Row(
                   children: [
                     Expanded(
@@ -112,8 +114,13 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
                         style: TextStyle(color: vrc(context).textColor100),
                         decoration: InputDecoration(
                           hintText: '  댓글을 입력해 보세요.',
-                          hintStyle: TextStyle(color: vrc(context).textColor100),
-                          prefixIcon: Icon(Icons.comment, color: vrc(context).textColor100),
+                          hintStyle: TextStyle(
+                            color: vrc(context).textColor100,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.comment,
+                            color: vrc(context).textColor100,
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: vrc(context).textColor100!,
@@ -134,7 +141,10 @@ class _CommentsPageState extends ConsumerState<CommentsPage> {
                     isLoading
                         ? CircularProgressIndicator()
                         : IconButton(
-                            icon: Icon(Icons.send, color: vrc(context).textColor100),
+                            icon: Icon(
+                              Icons.send,
+                              color: vrc(context).textColor100,
+                            ),
                             onPressed: () async {
                               final text = _controller.text.trim();
                               if (text.isEmpty || isLoading) return;
